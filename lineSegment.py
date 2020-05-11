@@ -27,9 +27,9 @@ grayimg = ~grayimg
 #Hough transform
 lines = cv.HoughLines(grayimg, 80, np.pi/90, 5, None,0,0,1,3)
 
-
+#get a list of all theta values
 all_theta = lines[:,:,1]
-
+#find the mode and show a histogram
 mode = stats.mode(all_theta)
 mode = mode[0]
 print(mode)
@@ -39,7 +39,7 @@ plt.show()
 #Open a window
 cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
 
-#Draw lines
+#Draw all lines with the most frequent theta-value
 j = 0
 if lines is not None:
         for i in range(0, len(lines)):
@@ -54,8 +54,6 @@ if lines is not None:
             if(theta == mode):
                 cv.line(grayimg, pt1, pt2, (255,0,155), 5, cv.LINE_AA)
                 j = j+1
-
-
 
 #Show image
 cv.imshow("Window",image)
