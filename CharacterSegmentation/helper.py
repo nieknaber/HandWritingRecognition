@@ -20,6 +20,15 @@ def getBinaryDummyImage(filename):
     return newBinarizedImage 
 
 def showBinaryImage(image):
+    image = convertToRGBImage(image)
+    image = Image.fromarray(image, 'RGB')
+    image.show()
+
+def showRGBImage(image):
+    image = Image.fromarray(image, 'RGB')
+    image.show()
+
+def convertToRGBImage(image):
     (height, width) = np.shape(image)
 
     data = np.zeros((height, width, 3), dtype=np.uint8)
@@ -31,5 +40,15 @@ def showBinaryImage(image):
             else:
                 data[y,x] = [0,0,0]
 
-    image = Image.fromarray(data, 'RGB')
-    image.show()
+    return data
+
+def addVerticalLinesToImage(image, xPositions):
+    
+    (height, width) = np.shape(image)
+    image = convertToRGBImage(image)
+
+    for position in xPositions:
+        for y in range(height):
+            image[y,position] = [255,0,0]
+
+    return image     
