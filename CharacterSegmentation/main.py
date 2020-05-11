@@ -1,8 +1,6 @@
 
 import numpy as np
+from helper import *
 
-print("This is a test only.")
-
-from PIL import Image
-im = Image.open('dummy.jpg')
-im.show()
+binaryImage = getBinaryDummyImage('dummy.jpg')
+showBinaryImage(binaryImage)
