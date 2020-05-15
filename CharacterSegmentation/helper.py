@@ -51,4 +51,22 @@ def addVerticalLinesToImage(image, xPositions):
         for y in range(height):
             image[y,position] = [255,0,0]
 
-    return image     
+    return image 
+
+def addHorizontalLinesToImage(image, yPositions):
+    
+    (height, width) = np.shape(image)
+    image = convertToRGBImage(image)
+
+    for position in yPositions:
+        for x in range(width):
+            image[position, x] = [255,0,0]
+
+    return image 
+
+def deletePartImage(image, yPositions):
+    print(np.shape(image))
+    image = np.delete(image, yPositions, axis=0)
+    print(np.shape(image))
+    return image        
+
