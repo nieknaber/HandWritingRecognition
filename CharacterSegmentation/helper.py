@@ -63,10 +63,5 @@ def addHorizontalLinesToImage(image, yPositions):
             image[position, x] = [255,0,0]
 
     return image 
-
-def deletePartImage(image, yPositions):
-    print(np.shape(image))
-    image = np.delete(image, yPositions, axis=0)
-    print(np.shape(image))
-    return image        
+    
 
