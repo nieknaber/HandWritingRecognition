@@ -17,8 +17,11 @@ line_levels = projectionTransform(binaryImage, threshold = 0.15, alongXAxis = Fa
 markedImage = addHorizontalLinesToImage(binaryImage,  line_levels)
 #showRGBImage(markedImage)
 cuttedImage = np.delete(binaryImage, line_levels, axis=0)
-
-# X-axis Preojection Transform
+# X-axis Preojection Transform after
 lines = projectionTransform(cuttedImage)
 markedImage = addVerticalLinesToImage(cuttedImage, lines)
 showRGBImage(markedImage)
+
+# Contours Drawing
+contours = ContourExtraction('dummy.jpg')  # click in the image and then ENTER to continue the script
+draw_countours(binaryImage, contours)

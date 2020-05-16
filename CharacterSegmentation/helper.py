@@ -1,6 +1,7 @@
 
 import numpy as np
 from PIL import Image
+import cv2
 
 def getBinaryDummyImage(filename):
     image = Image.open(filename)
@@ -63,5 +64,9 @@ def addHorizontalLinesToImage(image, yPositions):
             image[position, x] = [255,0,0]
 
     return image 
-    
 
+def draw_countours(image, contours):
+    img = cv2.drawContours(image, contours, -1, (0,255, 0), 3)
+    cv2.imshow('Contours', img) 
+    cv2.waitKey(0) 
+    #cv2.destroyAllWindows() 
