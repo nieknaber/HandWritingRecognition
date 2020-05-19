@@ -24,10 +24,6 @@ def showBinaryImage(image):
     image = Image.fromarray(image, 'RGB')
     image.show()
 
-def showRGBImage(image):
-    image = Image.fromarray(image, 'RGB')
-    image.show()
-
 def convertToRGBImage(image):
     (height, width) = np.shape(image)
 
@@ -42,13 +38,27 @@ def convertToRGBImage(image):
 
     return data
 
-def addVerticalLinesToImage(image, xPositions):
+
+### Here are the RGB image functions ###
+
+def showRGBImage(imageRGB):
+    imageRGB = Image.fromarray(imageRGB, 'RGB')
+    imageRGB.show()
+
+def addVerticalLinesToImage(imageRGB, xPositions):
     
-    (height, width) = np.shape(image)
-    image = convertToRGBImage(image)
+    (height, width, _) = np.shape(imageRGB)
 
     for position in xPositions:
         for y in range(height):
-            image[y,position] = [255,0,0]
+            imageRGB[y,position] = [255,0,0]
 
-    return image     
+    return imageRGB
+
+def addWindows(imageRGB, windows):
+
+    for window in windows:
+        (start, size) = window
+        imageRGB = addVerticalLinesToImage(imageRGB, [start, start+size])
+
+    return imageRGB

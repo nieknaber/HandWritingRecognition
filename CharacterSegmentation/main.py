@@ -7,7 +7,8 @@ from CharacterSegmentation import *
 binaryImage = getBinaryDummyImage('dummy.jpg')
 showBinaryImage(binaryImage)
 
-# Simple Projection Transform along the X-axis
-lines = projectionTransform(binaryImage)
-markedImage = addVerticalLinesToImage(binaryImage, lines)
-showRGBImage(markedImage)
+windows = generateWindows(binaryImage)
+
+imageRGB = convertToRGBImage(binaryImage)
+windowedImage = addWindows(imageRGB, windows)
+showRGBImage(windowedImage)
