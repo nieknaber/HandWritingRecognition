@@ -32,9 +32,27 @@ def generateWindows(image, windowSize = 80, stepSize = 80):
     for i in range(int((width-windowSize)/stepSize+1)):
         listOfWindows.append( (i*stepSize, windowSize) )
 
-    print(listOfWindows[-1])
     return listOfWindows
 
-def generateCenterOfGravity(image, window):
+def generateCenterOfGravity(image, windows):
 
-    return (50, 100)
+    (height, _) = np.shape(image)
+
+    allGravityPoints = []
+
+    for window in windows:
+        (windowStart, windowSize) = window
+
+        allXs = []
+        allYs = []
+        for y in range(height):
+            for x in range(windowStart, windowStart+windowSize):
+                if image[y,x] == 1:
+                    allXs.append(x)
+                    allYs.append(y)
+
+        meanX = int(round(np.mean(allXs),0))
+        meanY = int(round(np.mean(allYs),0))
+        allGravityPoints.append((meanY, meanX))
+
+    return allGravityPoints

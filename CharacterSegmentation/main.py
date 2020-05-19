@@ -8,9 +8,9 @@ binaryImage = getBinaryDummyImage('dummy.jpg')
 showBinaryImage(binaryImage)
 
 windows = generateWindows(binaryImage)
-center = generateCenterOfGravity(binaryImage, windows[0])
+centers = generateCenterOfGravity(binaryImage, windows)
 
 imageRGB = convertToRGBImage(binaryImage)
 windowedImage = addWindows(imageRGB, windows)
-imageWithCenter = drawCentrePoint(windowedImage, [center])
+imageWithCenter = drawCentrePoint(windowedImage, centers)
 showRGBImage(windowedImage)
