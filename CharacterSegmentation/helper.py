@@ -62,3 +62,30 @@ def addWindows(imageRGB, windows):
         imageRGB = addVerticalLinesToImage(imageRGB, [start, start+size])
 
     return imageRGB
+
+def drawX(imageRGB, color, size, x, y):
+    for i in range(size):
+        imageRGB[x-i,y-i] = color
+        imageRGB[x+i,y-i] = color
+        imageRGB[x-i,y+i] = color
+        imageRGB[x+i,y+i] = color
+    return imageRGB
+
+def drawMultipleOffsetX(imageRGB, x, y, color = [0,0,255], size = 6, offset = 2):
+    imageRGB[x,y] = color
+    drawX(imageRGB, color, size, x, y)
+    while offset != 0:
+        drawX(imageRGB, color, size, x-offset, y)
+        drawX(imageRGB, color, size, x+offset, y)
+        drawX(imageRGB, color, size, x, y-offset)
+        drawX(imageRGB, color, size, x, y+offset)
+        offset -= 1
+    return imageRGB
+
+def drawCentrePoint(imageRGB, points):
+
+    for point in points:
+        (x, y) = point
+        imageRGB = drawMultipleOffsetX(imageRGB, x, y)
+
+    return imageRGB

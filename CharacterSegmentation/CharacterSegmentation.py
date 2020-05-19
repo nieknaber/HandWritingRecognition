@@ -24,7 +24,7 @@ def projectionTransform(image, threshold = 0.01, alongXAxis = True):
 
     return minimumLinePositions
 
-def generateWindows(image, windowSize = 80, stepSize = 20):
+def generateWindows(image, windowSize = 80, stepSize = 80):
 
     (height, width) = np.shape(image)
 
@@ -34,3 +34,7 @@ def generateWindows(image, windowSize = 80, stepSize = 20):
 
     print(listOfWindows[-1])
     return listOfWindows
+
+def generateCenterOfGravity(image, window):
+
+    return (50, 100)
