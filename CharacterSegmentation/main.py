@@ -3,12 +3,15 @@ import numpy as np
 from helper import *
 from CharacterSegmentation import *
 
-# Importing the image and converting to binarys
 binaryImage = getBinaryDummyImage('dummy.jpg')
-showBinaryImage(binaryImage)
+# showBinaryImage(binaryImage)
 
 windows = generateWindows(binaryImage)
-centers = generateCenterOfGravity(binaryImage, windows)
+
+significantWindows = filterWindows(binaryImage, windows)
+windows = significantWindows
+
+centers = generateAllCenterOfGravities(binaryImage, windows)
 
 imageRGB = convertToRGBImage(binaryImage)
 windowedImage = addWindows(imageRGB, windows)

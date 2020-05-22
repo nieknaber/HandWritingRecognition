@@ -38,6 +38,19 @@ def convertToRGBImage(image):
 
     return data
 
+def calculatePixelDensityOfWindow(image, window):
+    # Needs optimization, really inefficient right now...
+
+    (height, width) = np.shape(image)
+    (windowStart, windowSize) = window
+
+    counter = 0
+    for y in range(height):
+        for x in range(windowStart, windowStart+windowSize):
+            if image[y,x] == 1:
+                counter += 1
+
+    return counter/(height * windowSize)
 
 ### Here are the RGB image functions ###
 
