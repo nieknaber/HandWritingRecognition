@@ -26,7 +26,7 @@ def projectionTransform(image, threshold = 0.01, alongXAxis = True):
             minimumLinePositions.append(index)
 
     return minimumLinePositions
-
+    
     
 def ContourExtraction(image):
     

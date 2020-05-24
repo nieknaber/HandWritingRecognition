@@ -91,13 +91,9 @@ model.compile(optimizer='adam',
 			   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
 			   metrics=['accuracy'])
 
-# model.fit(x_train, y_train, epochs=10)
+model.fit(x_train, y_train, epochs=10)
 
-# test_loss, test_acc = model.evaluate(x_test,  y_test, verbose=2)
+test_loss, test_acc = model.evaluate(x_test,  y_test, verbose=2)
 
-# print('\nTest accuracy:', test_acc)
-
-# https://github.com/qwertpi/catvdogcnn/blob/master/train.py
-
-# https://www.tensorflow.org/tutorials/keras/classification
+print('\nTest accuracy:', test_acc)
 

@@ -66,7 +66,7 @@ def addHorizontalLinesToImage(image, yPositions):
     return image 
 
 def draw_countours(image, contours):
-    img = cv2.drawContours(image, contours, -1, (0,255, 0), 3)
+    img = cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
     cv2.imshow('Contours', img) 
     cv2.waitKey(0) 
-    #cv2.destroyAllWindows() 
+    cv2.destroyAllWindows() 
