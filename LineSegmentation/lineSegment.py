@@ -31,38 +31,18 @@ def lineSegment(filename):
         i = i - 1
         thetaDominant = freqs[i, 0]
     
-    print(thetaDominant)
-    cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
-    drawLines(lines, grayimg, dimensions, thetaDominant, True)
-    cv.imshow("Window",grayimg)
-    cv.waitKey(0)
+    linePoints = determinePoints(lines, grayimg, dimensions, thetaDominant, 0, True)
+    # cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
+    # cv.imshow("Window",grayimg)
+    # cv.waitKey(0)
 
-
-    numberOfLines = len(lines)
-    # # range(numberOfLines - 1)
-    # rhos = []
-    # for index in range(numberOfLines):
-    #     # if (lines[index][0][1] == theta):
-    #     rhos.append(int(lines[index][0][0] / math.sin(lines[index][0][1])))
-
-    # rhos = np.sort(np.array(rhos))
-    # print(rhos)
-
-    # croppedImgs = []
-    # for i in range(len(rhos) - 1):
-    #     cropped = grayimg[rhos[i]:rhos[i+1], :]
-    #     croppedImgs.append(cropped)
-
-    # cropped = grayimg[rhos[-1]:dimensions[0], :]
-    # croppedImgs.append(cropped)
-
-    # return (thetaDominant, rhos, croppedImgs)
-
-
+    return (thetaDominant, linePoints, grayimg)
 
 ########
 # helper functions
-def drawLines(lines, grayimg, dimensions, theta, threshold = True):
+def determinePoints(lines, grayimg, dimensions, theta, variation = np.pi / 90, threshold = True):
+    linePoints = []
+
     if lines is not None:
         for i in range(0, len(lines)):
             rho = lines[i][0][0]
@@ -75,7 +55,11 @@ def drawLines(lines, grayimg, dimensions, theta, threshold = True):
             pt1 = (int(x0 + dimensions[1]*(-b)), int(y0 + dimensions[0]*(a)))
             pt2 = (int(x0 - dimensions[1]*(-b)), int(y0 - dimensions[0]*(a)))
             if (threshold):
-                if(abs(theta - theta2) < np.pi / 90): # 2 degree variation allowed
-                    cv.line(grayimg, pt1, pt2, (0,0,0), 5)
+                if(abs(theta - theta2) <= variation): # 2 degree variation allowed
+                    # cv.line(grayimg, pt1, pt2, (0,0,0), 5)
+                    linePoints.append((pt1, pt2))
             else:
-                cv.line(grayimg, pt1, pt2, (0,0,0), 5)
+                # cv.line(grayimg, pt1, pt2, (0,0,0), 5)
+                linePoints.append((pt1, pt2))
+
+    return linePoints
