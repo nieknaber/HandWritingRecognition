@@ -27,7 +27,7 @@ def lineSegment(filename):
     i = len(freqs) - 1
 
     thetaDominant = freqs[len(freqs) - 1, 0]
-    while (abs(np.pi / 2 - thetaDominant % np.pi) > np.pi / 36): # theta allowed to deviate 2.5 degrees from 90
+    while (abs(np.pi / 2 - thetaDominant) > np.pi / 36): # theta allowed to deviate 2.5 degrees from 90
         i = i - 1
         thetaDominant = freqs[i, 0]
     
