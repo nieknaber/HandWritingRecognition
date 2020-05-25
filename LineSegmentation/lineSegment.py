@@ -17,10 +17,10 @@ def lineSegment(filename):
     dimensions = np.shape(image)
     grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     
-    ah = 100 # average character height, for now an estimate
+    ah = 200 # average character height, for now an estimate
 
     #Hough transform
-    lines = cv.HoughLines(~grayimg, int(0.2 * ah), np.pi / 90, 2500, None,0,0,np.pi / 2 - np.pi / 36, np.pi / 2 + np.pi / 36) # dim: (lines, 1, 2) where third dim: rho; theta
+    lines = cv.HoughLines(~grayimg, int(0.2 * ah), np.pi / 90, 5000, None,0,0,np.pi / 2 - np.pi / 36, np.pi / 2 + np.pi / 36) # dim: (lines, 1, 2) where third dim: rho; theta
     freqs = stats.itemfreq(lines[:,:,1])
     freqs = freqs[freqs[:, 1].argsort()]
     
@@ -54,12 +54,16 @@ def determinePoints(lines, grayimg, dimensions, theta, variation = np.pi / 90, t
             y0 = b * rho
             pt1 = (int(x0 + dimensions[1]*(-b)), int(y0 + dimensions[0]*(a)))
             pt2 = (int(x0 - dimensions[1]*(-b)), int(y0 - dimensions[0]*(a)))
+            # convert to coordinates on edges of the image
+            slope = (pt2[1] - pt1[1]) / (pt2[0] - pt1[0])  
+            newpt1 = (0, int(pt1[1] - pt1[0] * slope))
+            newpt2 = (dimensions[1] - 1, int(pt2[1] + (dimensions[1] - 1 - pt2[0]) * slope ))
             if (threshold):
                 if(abs(theta - theta2) <= variation): # 2 degree variation allowed
-                    # cv.line(grayimg, pt1, pt2, (0,0,0), 5)
-                    linePoints.append((pt1, pt2))
+                    # cv.line(grayimg, newpt1, newpt2, (0,0,0), 5)
+                    linePoints.append((newpt1, newpt2))
             else:
-                # cv.line(grayimg, pt1, pt2, (0,0,0), 5)
-                linePoints.append((pt1, pt2))
+                # cv.line(grayimg, newpt1, newpt2, (0,0,0), 5)
+                linePoints.append((newpt1, newpt2))
 
     return linePoints
