@@ -16,17 +16,17 @@ def lineSegment(filename):
     image = cv.imread(filename)
     dimensions = np.shape(image)
     grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-
+    
     ah = 100 # average character height, for now an estimate
 
     #Hough transform
-    lines = cv.HoughLines(grayimg, int(0.2 * ah), np.pi / 90, 1, None,0,0,1,3) # dim: (lines, 1, 2) where third dim: rho; theta
+    lines = cv.HoughLines(~grayimg, int(0.2 * ah), np.pi / 90, 2500, None,0,0,np.pi / 2 - np.pi / 36, np.pi / 2 + np.pi / 36) # dim: (lines, 1, 2) where third dim: rho; theta
     freqs = stats.itemfreq(lines[:,:,1])
     freqs = freqs[freqs[:, 1].argsort()]
     
     i = len(freqs) - 1
 
-    thetaDominant = freqs[i, 0]
+    thetaDominant = freqs[len(freqs) - 1, 0]
     while (abs(np.pi / 2 - thetaDominant % np.pi) > np.pi / 36): # theta allowed to deviate 2.5 degrees from 90
         i = i - 1
         thetaDominant = freqs[i, 0]
