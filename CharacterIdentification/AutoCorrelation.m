@@ -45,7 +45,7 @@ for k = 1:directions
     slope = cos(F * pi / 180)/sin(F * pi / 180);
 
     for x = 1:width
-        y = s * (x-width/2);
+        y = slope * (x-width/2);
         if y > -width/2
             if y < width/2
                 rounded = round(y+width/2);
