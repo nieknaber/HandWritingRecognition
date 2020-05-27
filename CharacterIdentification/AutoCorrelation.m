@@ -2,7 +2,7 @@
 addpath('~/Library/Mobile Documents/com~apple~CloudDocs/iCloud/Study/University/6-4 Handwriting Recognition/Project/HandWritingRecognition/CharacterIdentification/')
 
 % import image and throw away channels
-image = imread('Test9.tiff');
+image = imread('Test7.tiff');
 image = image(:,:,1);
 [height, width] = size(image);
 
@@ -54,12 +54,21 @@ end
 %% How many directions do we want?
 
 directions = 32;
-[value, i] = maxk(allCorrSums, directions)
+[value, i] = maxk(allCorrSums, directions);
+
+data = [value; i]';
+[idx, C] = kmeans(data, 8);
+
+% figure;
+% scatter(value,i);
+% hold on
+% scatter(C(:,1), C(:,2), 'kx');
 
 % plot each significant direction on the image
-for k = 1:directions
+bestDirections = round(C(:,2))
+for k = 1:length(bestDirections)
 
-    F = abs(180-i(k));
+    F = abs(180-bestDirections(k));
     slope = cos(F * pi / 180)/sin(F * pi / 180);
 
     for x = 1:dim*f
