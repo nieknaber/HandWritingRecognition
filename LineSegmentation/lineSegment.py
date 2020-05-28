@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 import math
-from scipy import stats
+from scipy import stats, ndimage
 
 # Takes image name, performs hough transform. 
 #
@@ -37,6 +37,39 @@ def lineSegment(filename):
     # cv.waitKey(0)
 
     return (thetaDominant, linePoints, grayimg)
+
+def findSlope(filename, n_angles, precision):
+
+    image = cv.imread(filename)
+    grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    grayimg = ~grayimg
+
+    # rotation angle in degrees:
+    slopeResults = np.zeros(n_angles*precision+1)
+
+    for angle in range(0,n_angles*precision+1):
+        print("Computing angle ",angle/precision-(n_angles/2))
+        rotated = ndimage.rotate(grayimg,angle/precision-(n_angles/2))
+        rotatedProj = np.sum(rotated,1)
+        slopeResults[angle] = np.max(rotatedProj)
+
+
+    bestAngle = np.argmax(slopeResults)-(n_angles/2)
+    # Create output image same height as text, 500 px wide
+    returnImage = ndimage.rotate(grayimg,angle/precision-(n_angles/2))
+    proj = np.sum(returnImage,1)
+    m = np.max(proj)
+    w = 500
+    result = np.zeros((proj.shape[0], 500))
+
+    # Draw a line for each row
+    for row in range(image.shape[0]):
+
+        cv.line(result, (0, row), (int(proj[row] * w / m), row), (255, 0, 0), 1)  # int(proj[row]*w/m)
+
+    returnImage = np.concatenate((returnImage, result), axis=1)
+    return returnImage, (np.argmax(slopeResults)-n_angles/2)
+
 
 ########
 # helper functions
