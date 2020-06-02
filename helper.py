@@ -21,20 +21,21 @@ def getBinaryDummyImage(filename):
     return newBinarizedImage
 
 def getImage(path):
-    image = cv2.imread('images/08.jpg')
+    image = cv2.imread(path)
     (height, width, _) = np.shape(image)  # dummy is (180, 1250, 3), i.e. (height, width, colors)
     print(np.shape(image))
 
     newBinarizedImage = np.zeros((height, width))
-
+    print("processing image...")
     for y in range(height):
-        print("processing... pixel row: ", y, " out of ", height)
+        #print("processing... pixel row: ", y, " out of ", height)
         for x in range(width):
             (r, _, _) = image[y, x]
             if r < 125:
                 newBinarizedImage[y, x] = 1
 
     return newBinarizedImage
+
 
 
 def showBinaryImage(image):

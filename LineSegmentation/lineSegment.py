@@ -2,6 +2,7 @@ import cv2 as cv
 import numpy as np
 import math
 from scipy import stats, ndimage
+from helper import getImage
 
 # Takes image name, performs hough transform. 
 #
@@ -15,7 +16,8 @@ def lineSegment(filename):
     
     image = cv.imread(filename)
     dimensions = np.shape(image)
-    grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    grayimg = image
+    #grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     
     ah = 200 # average character height, for now an estimate
 
@@ -39,36 +41,41 @@ def lineSegment(filename):
     return (thetaDominant, linePoints, grayimg)
 
 def findSlope(filename, n_angles, precision):
+    # load image and invert it for the histograms to work
+    image = getImage(filename)
+    #grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    image = cv.imread(filename)
-    grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    grayimg = ~grayimg
-
-    # rotation angle in degrees:
+    # initialize array to store results (max projection height)
     slopeResults = np.zeros(n_angles*precision+1)
 
+    # loop over all angles
     for angle in range(0,n_angles*precision+1):
+        # print statement to see that stuff is happening cause it's not so fast
         print("Computing angle ",angle/precision-(n_angles/2))
-        rotated = ndimage.rotate(grayimg,angle/precision-(n_angles/2))
+        # rotate image by specified degrees
+        rotated = ndimage.rotate(image,angle/precision-(n_angles/2))
+        # compute projection profile for this rotation
         rotatedProj = np.sum(rotated,1)
+        # find the highest peak (indicating the longest line) and save it to results
         slopeResults[angle] = np.max(rotatedProj)
 
 
-    bestAngle = np.argmax(slopeResults)-(n_angles/2)
+    bestAngle = np.argmax(slopeResults)/precision-(n_angles/2)
     # Create output image same height as text, 500 px wide
-    returnImage = ndimage.rotate(grayimg,angle/precision-(n_angles/2))
+    returnImage = ndimage.rotate(image,bestAngle)
+    # compute projections (again) to show for return image
     proj = np.sum(returnImage,1)
     m = np.max(proj)
     w = 500
     result = np.zeros((proj.shape[0], 500))
 
-    # Draw a line for each row
+    # Draw projection profile for result
     for row in range(image.shape[0]):
-
         cv.line(result, (0, row), (int(proj[row] * w / m), row), (255, 0, 0), 1)  # int(proj[row]*w/m)
 
+    # return image with added projection profile
     returnImage = np.concatenate((returnImage, result), axis=1)
-    return returnImage, (np.argmax(slopeResults)-n_angles/2)
+    return returnImage, bestAngle
 
 
 ########
