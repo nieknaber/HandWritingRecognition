@@ -11,8 +11,8 @@ print("Best angle: ",slope)
 
 images = lineSegmentAStar(rotatedImage)
 
-
-
+for i in range(0,len(images)):
+    cv.imwrite("line "+str(i)+".bmp", np.transpose(images[i]*255))
 
 # for i in range(1,9):
 #

@@ -66,7 +66,7 @@ def findSlope(filename, n_angles, precision):
     # compute projections (again) to show for return image
     proj = np.sum(returnImage,1)
     m = np.max(proj)
-    w = 500
+    w = 500 # width of the graph
     result = np.zeros((proj.shape[0], 500))
 
     # Draw projection profile for result

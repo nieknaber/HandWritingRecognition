@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
-import math
-from scipy import stats, ndimage, signal
+from scipy import signal
 
 
 def lineSegmentAStar(image):
@@ -13,51 +12,40 @@ def lineSegmentAStar(image):
     past_peak = 0
     # Initializing AStar
     # Finding the valleys (inverted peaks) that represent lines and run a* algorithm
-    j = 0
-    points = []
+    j = 0           # counter for lines
+    points = []     # list to store edges of lines (paths)
     for peak in peaks[0]:
-        if(peak-past_peak>50 and peak < 900):
-            #cv.line(image, (0, peak), (2706, peak), (255, 255, 255), thickness=10)
+        if(peak-past_peak>50):
             print("Running a* for peak ",peak)
             points.insert(j, astar(np.transpose(image), (0, peak), (width-501, peak)))
-            print("Finished!")
-
-#            for i in range(0, len(points[j])-1):
-#                mask[points[i][1]][points[i][0]] = 1
-#                cv.line(image, points[i], points[i+1], (255, 0, 0), thickness=1)
-                #cv.circle(image,points[i], 1, (255,0,0))
-
         past_peak = peak
         j += 1
     images = []
     imageT = np.transpose(image)
-
-
+    previous = 0 # set 0 so the first
+    # for all lines
     for i in range(0,len(points)):
-        returnimg = np.zeros((5000, 5000))
+        newImage = np.zeros((5000, 5000)) #cropped later
         for point in points[i]:
             print("point[0]:", point[0])
             print("point[1]:", point[1])
-            returnimg[point[0]][0:point[1]] = imageT[point[0]][0:point[1]]
-        coords = cv.findNonZero(returnimg)  # Find all non-zero points (text)
-        x, y, w, h = cv.boundingRect(coords)  # Find minimum spanning bounding box
-        returnimg = returnimg[y:y + h, x:x + w]  # Crop the image - note we do this on the original image
-        images.append(returnimg)
+            newImage[point[0]][0:point[1]] = imageT[point[0]][0:point[1]] #abracadabra
+        returnImage = newImage - previous
+        previous = newImage
 
-    cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
-    cv.imshow("Window",np.transpose(returnimg))
-    #cv.imwrite(image,"detectedLines.png")
-    cv.waitKey(0)
+        coords = cv.findNonZero(returnImage)          # Find all non-zero points (text)
+        x, y, w, h = cv.boundingRect(coords)        # Find minimum spanning bounding box
+        returnImage = returnImage[y:y + h, x:x + w]     # Crop the image
+
+        images.append(returnImage)
     return images
 
 
-# a star path planning algorithm
+# a star path planning algorithm (borrowed from stack overflow)
 from heapq import *
-
 
 def heuristic(a, b):
     return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
-
 
 def astar(array, start, goal):
     neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]

@@ -29,10 +29,9 @@ def getImage(path):
     print("processing image...")
 
     for y in range(height):
-        #print("processing... pixel row: ", y, " out of ", height)
         for x in range(width):
             (r, _, _) = image[y, x]
-            if r < 125:
+            if r < 128:
                 newBinarizedImage[y, x] = int(1)
 
     return newBinarizedImage
