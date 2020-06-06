@@ -2,14 +2,16 @@ import sys
 from LineSegmentation.lineSegment import *
 from LineSegmentation.lineSegmentAStar import *
 
-rotatedImage,slope = findSlope("images/07.jpg", 2, 1)
+rotatedImage,slope = findSlope("images/05.jpg", 0, 1)
 print("Best angle: ",slope)
 
 #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
 #cv.imshow("Window",rotatedImage)
 #k = cv.waitKey(0)
 
-lineSegmentAStar(rotatedImage)
+images = lineSegmentAStar(rotatedImage)
+
+
 
 
 # for i in range(1,9):

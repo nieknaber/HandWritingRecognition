@@ -75,6 +75,9 @@ def findSlope(filename, n_angles, precision):
 
     # return image with added projection profile
     returnImage = np.concatenate((returnImage, result), axis=1)
+    asdf = np.zeros((proj.shape[0],1))
+
+
     return returnImage, bestAngle
 
 
