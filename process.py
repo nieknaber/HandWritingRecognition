@@ -1,8 +1,10 @@
 import sys
+import time
 from LineSegmentation.lineSegment import *
 from LineSegmentation.lineSegmentAStar import *
 
-rotatedImage,slope = findSlope("images/05.jpg", 0, 1)
+img = getImage("images/20.jpg")
+rotatedImage,slope = findSlope(img, 10, 1)
 print("Best angle: ",slope)
 
 #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
@@ -12,7 +14,10 @@ print("Best angle: ",slope)
 images = lineSegmentAStar(rotatedImage)
 
 for i in range(0,len(images)):
-    cv.imwrite("line "+str(i)+".bmp", np.transpose(images[i]*255))
+    cv.imwrite("line " + str(i) + ".bmp", np.transpose(images[i] * 255))
+
+
+    
 
 # for i in range(1,9):
 #

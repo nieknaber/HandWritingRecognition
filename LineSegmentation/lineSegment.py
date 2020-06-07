@@ -40,10 +40,7 @@ def lineSegment(filename):
 
     return (thetaDominant, linePoints, grayimg)
 
-def findSlope(filename, n_angles, precision):
-    # load image and invert it for the histograms to work
-    image = getImage(filename)
-    #grayimg = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+def findSlope(image, n_angles, precision):
 
     # initialize array to store results (max projection height)
     slopeResults = np.zeros(n_angles*precision+1)
@@ -51,14 +48,13 @@ def findSlope(filename, n_angles, precision):
     # loop over all angles
     for angle in range(0,n_angles*precision+1):
         # print statement to see that stuff is happening cause it's not so fast
-        print("Computing angle ",angle/precision-(n_angles/2))
+        # print("Computing angle ",angle/precision-(n_angles/2))
         # rotate image by specified degrees
         rotated = ndimage.rotate(image,angle/precision-(n_angles/2))
         # compute projection profile for this rotation
         rotatedProj = np.sum(rotated,1)
         # find the highest peak (indicating the longest line) and save it to results
         slopeResults[angle] = np.max(rotatedProj)
-
 
     bestAngle = np.argmax(slopeResults)/precision-(n_angles/2)
     # Create output image same height as text, 500 px wide
@@ -74,9 +70,8 @@ def findSlope(filename, n_angles, precision):
         cv.line(result, (0, row), (int(proj[row] * w / m), row), (255, 0, 0), 1)  # int(proj[row]*w/m)
 
     # return image with added projection profile
-    returnImage = np.concatenate((returnImage, result), axis=1)
+    # returnImage = np.concatenate((returnImage, result), axis=1)
     asdf = np.zeros((proj.shape[0],1))
-
 
     return returnImage, bestAngle
 

@@ -27,8 +27,6 @@ def lineSegmentAStar(image):
     for i in range(0,len(points)):
         newImage = np.zeros((5000, 5000)) #cropped later
         for point in points[i]:
-            print("point[0]:", point[0])
-            print("point[1]:", point[1])
             newImage[point[0]][0:point[1]] = imageT[point[0]][0:point[1]] #abracadabra
         returnImage = newImage - previous
         previous = newImage
