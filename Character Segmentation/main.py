@@ -42,6 +42,14 @@ def createWindowsFromTrainingImage(image, windowSize):
     right = image[:,(w-width):]
     return (left, right)
 
+def createFeatureSegments(window, segmentSize):
+    segments = []
+    for i in range(6):
+        for j in range(2):
+            segments.append(window[i*16:(i+1)*16,j*16:(j+1)*16])
+    return segments
+
 i = Image.open('./Resized Herodian/Alef_19.png')
 i = np.array(i)
 (left, right) = createWindowsFromTrainingImage(i,windowSize)
+segments = createFeatureSegments(left, segmentSize)
