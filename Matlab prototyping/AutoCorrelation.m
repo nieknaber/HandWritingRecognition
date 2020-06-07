@@ -1,8 +1,8 @@
 
-addpath('~/Library/Mobile Documents/com~apple~CloudDocs/iCloud/Study/University/6-4 Handwriting Recognition/Project/HandWritingRecognition/CharacterIdentification/')
+addpath('~/Documents/HandWritingRecognition/Matlab prototyping/')
 
 % import image and throw away channels
-image = imread('Test7.tiff');
+image = imread('data/4.png');
 image = image(:,:,1);
 [height, width] = size(image);
 
@@ -14,7 +14,7 @@ corr = fftshift(abs(ifft2(ans1)));
 
 %% New Line finder
 
-f = 100;
+f = 10;
 dim = height;
 s = 1;
 
@@ -53,8 +53,9 @@ end
 
 %% How many directions do we want?
 
-directions = 32;
+directions = 16;
 [value, i] = maxk(allCorrSums, directions);
+sort(i)
 
 data = [value; i]';
 [idx, C] = kmeans(data, 8);
@@ -63,7 +64,7 @@ data = [value; i]';
 % scatter(value,i);
 % hold on
 % scatter(C(:,1), C(:,2), 'kx');
-
+ 
 % plot each significant direction on the image
 bestDirections = round(C(:,2))
 for k = 1:length(bestDirections)
