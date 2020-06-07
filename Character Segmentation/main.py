@@ -3,33 +3,45 @@ import numpy as np
 from PIL import Image
 from helper import *
 from CharacterSegmentation import *
+import cv2
 
 import os
 from os import listdir
 
-# findWindows()
+## GLOBAL (HEIGHT, WIDTH)
 
-# Constants and parameters
 segmentSize = (16,16)
-windowSize = (16*6, 16*2)
+windowSize = (16*6, 16*2) # 96,32
+resizedDimensions = (96, 64)
 featuresPerSegment = 8
 featuresPerWindow = featuresPerSegment * (2*12)
 
-# Examine training data
+def resizeImage(imageFileName, newSize):
+    (height, width) = newSize
+    image = cv2.imread(imageFileName, cv2.IMREAD_UNCHANGED)
+    resized = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+    return Image.fromarray(resized)
 
-# i = Image.open('./monkbrill/Resh/navis-QIrug-Qumran_extr09_2357-line-007-y1=392-y2=514-zone-HUMAN-x=0711-y=0020-w=0032-h=0067-ybas=0040-nink=443-segm=COCOS5cocos.pgm')
-# i.show()
+# Convert training data to windows
+def resizeAllImages(fromLoation = "Herodian", toLocation = "./Resized Herodian/", type = ".png"):
+    characters = os.listdir(fromLoation)
+    for character in characters:
+        if not character.startswith('.'):
+            files = os.listdir(fromLoation + "/" + character)
+            for f in files:
+                if not f.startswith('.'):
+                    if f.endswith(type):
+                        imagePath = fromLoation + '/' + character + '/' + f
+                        newImage = resizeImage(imagePath, resizedDimensions)
+                        newImage.save(toLocation+f)
 
-characterLocation = "Herodian"
-characters = os.listdir(characterLocation)
-for character in characters:
-    if not character.startswith('.'):
-        files = os.listdir(characterLocation + "/" + character)
-        for f in files:
-            if not f.startswith('.'):
-                imagePath = characterLocation + '/' + character + '/' + f
-                # print(imagePath)
-                image = Image.open(imagePath)
-                (height, width) = np.shape(image)
-                print(height, width)
+def createWindowsFromTrainingImage(image, windowSize):
+    (h,w) = np.shape(image)
+    (height, width) = windowSize
+    left = image[:,0:width]
+    right = image[:,(w-width):]
+    return (left, right)
 
+i = Image.open('./Resized Herodian/Alef_19.png')
+i = np.array(i)
+(left, right) = createWindowsFromTrainingImage(i,windowSize)
