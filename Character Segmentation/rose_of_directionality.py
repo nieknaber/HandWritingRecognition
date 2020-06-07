@@ -2,6 +2,7 @@
 import numpy as np
 from PIL import Image
 import cv2
+from scipy.cluster.vq import kmeans
 
 # def binarizeImage(image):
 #     (height, width) = np.shape(image)
@@ -36,10 +37,10 @@ def summedCorrelationPerDirection(corr):
         rad = angle * np.pi / 180
         slope = np.cos(rad)/np.sin(rad)
 
-        for x in range(dim*f-f):
+        for x in range(1,dim*f):
             lineY = slope * (x-(dim*f/2))
 
-            for y in range(dim*f-f):
+            for y in range(1,dim*f):
                 offsetY = y - (dim*f/2)
                 offsetX = x - (dim*f/2)
 
@@ -47,15 +48,36 @@ def summedCorrelationPerDirection(corr):
                     foundX = int(np.ceil(x/f))
                     foundY = int(np.ceil(y/f))
                     
-                    if lut[foundY, foundX] == 0:
-                        values.append(corr[foundY,foundX])
-                        lut[foundY,foundX] = 1
+                    if lut[foundY-1, foundX-1] == 0:
+                        values.append(corr[foundY-1,foundX-1])
+                        lut[foundY-1,foundX-1] = 1
 
         allSums.append((np.sum(values)-np.min(corr))/(np.max(corr)-np.min(corr)))
         print("angle: " + str(angle) + " done!")
 
     return allSums
-        
+
+def findTopKValues(array, k = 4):
+    sortedArray = array.copy()
+    sortedArray.sort()
+    sortedArray = sortedArray[::-1]
+    topK = sortedArray[:k]
+
+    maxIndices = []
+    for i in topK:
+        for index, item in enumerate(array):
+            print(i, index, item)
+            if item == i:
+                maxIndices.append(index)
+                
+    maxIndices = list(set(maxIndices))
+    maxIndices.sort()
+    return maxIndices
+
+def findBestDirection(allDirections):
+    directions = 16
+    topK = findTopKValues(allDirections, directions)
+    print(topK)
 
 image = Image.open('./Test Segments/4.png')
 image = np.array(image)
@@ -64,4 +86,4 @@ image = np.array(image)
 corr = calculateAutoCorrelationMatrix(image)
 corrSum = summedCorrelationPerDirection(corr)
 
-
+findBestDirection(corrSum)
