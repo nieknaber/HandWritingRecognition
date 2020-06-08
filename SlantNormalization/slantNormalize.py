@@ -14,6 +14,14 @@ def deskew(img, i):
     
     return dst
 
+# crops whitespace from image
+def cropWhiteSpace(image):
+    coords = cv.findNonZero(newImg)
+    x, y, w, h = cv2.boundingRect(coords)
+    newImg = newImg[y:y+h, x:x+w] 
+    
+    return newImg
+
 # deskews over different angles and calculates best based on 
 # summed squared vertical density
 # returns slant angle + deslanted image 
@@ -22,7 +30,12 @@ def slantNormalize(img):
     imgs = []
     ss = []
     for i in range(50):
-        newImg = deskew(img, i)
+        # pad whitespace to left border
+        dst = cv.copyMakeBorder(img, 0, 0, 50, 0, cv.BORDER_CONSTANT)
+        newImg = deskew(dst, i)
+        
+        # crop image
+        newImg = cropWhiteSpace(newImg)
         y, x = newImg.shape
 
         s = 0
