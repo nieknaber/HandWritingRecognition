@@ -21,18 +21,10 @@ def getBinaryDummyImage(filename):
     return newBinarizedImage
 
 def getImage(path):
+    
     image = cv2.imread(path)
-    (height, width, _) = np.shape(image)  # dummy is (180, 1250, 3), i.e. (height, width, colors)
-    print(np.shape(image))
-
-    newBinarizedImage = np.zeros((height, width), dtype=int)
-    print("processing image...")
-
-    for y in range(height):
-        for x in range(width):
-            (r, _, _) = image[y, x]
-            if r < 128:
-                newBinarizedImage[y, x] = int(1)
+    newBinarizedImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    ret, newBinarizedImage = cv2.threshold(newBinarizedImage, 127, 1, cv2.THRESH_BINARY_INV)
 
     return newBinarizedImage
 
