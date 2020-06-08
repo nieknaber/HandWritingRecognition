@@ -16,9 +16,9 @@ def deskew(img, i):
 
 # crops whitespace from image
 def cropWhiteSpace(image):
-    coords = cv.findNonZero(newImg)
-    x, y, w, h = cv2.boundingRect(coords)
-    newImg = newImg[y:y+h, x:x+w] 
+    coords = cv.findNonZero(image)
+    x, y, w, h = cv.boundingRect(coords)
+    newImg = image[y:y+h, x:x+w] 
     
     return newImg
 
