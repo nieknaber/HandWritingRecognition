@@ -2,8 +2,6 @@ import cv2 as cv
 import numpy as np
 import math
 from scipy import stats, ndimage
-from helper import getImage
-
 # Takes image name, performs hough transform. 
 #
 # Returns Theta, Rows[], Segments [][][]:

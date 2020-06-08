@@ -1,9 +1,9 @@
 import sys
 import time
-from SlantNormalization.slantNormalize import *
-from LineSegmentation.lineSegment import *
-from LineSegmentation.lineSegmentAStar import *
-from SlantNormalization.slantNormalize import *
+from src.HelperFunctions.helper import *
+from src.LineSegmentation.lineSegment import *
+from src.LineSegmentation.lineSegmentAStar import *
+from src.SlantNormalization.slantNormalize import *
 
 SAVEPICTURES = True # set to false if you do not want to save pictures in between steps
 
