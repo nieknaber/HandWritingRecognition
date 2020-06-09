@@ -1,10 +1,26 @@
 
 import numpy as np
 from PIL import Image
-import cv2
-from scipy.cluster.vq import kmeans
 
-def calculateAutoCorrelationMatrix(image):
+#####################################################################
+## Helper for file access
+
+def saveImageToFile(image, filename):
+    im = Image.fromarray(image)
+    im = im.convert('L')
+    im.save(filename)
+
+def openImageFromLocation(filename):
+    image = Image.open(filename)
+    image = np.array(image)
+    return image
+
+#####################################################################
+## Correlation -> Directions -> Best directions
+
+def calculateAutoCorrelationMatrix(image_filename):
+
+    image = openImageFromLocation(image_filename)
 
     # Calculate the autocorrelation via FFT stuff
     fftImage = np.fft.fft2(image)
@@ -26,7 +42,7 @@ def calculateAutoCorrelationMatrix(image):
 
 # Calculates the summed correlation values for each direction in 180 degrees
 # f is the sampling rate of the pixels
-def summedCorrelationPerDirection(corr, f = 10):
+def summedCorrelationPerDirection(corr, f = 10, verbose = False):
 
     (h, w) = np.shape(corr)
 
@@ -58,7 +74,9 @@ def summedCorrelationPerDirection(corr, f = 10):
                         lut[foundY-1,foundX-1] = 1
 
         allSums.append((np.sum(values)-np.min(corr))/(np.max(corr)-np.min(corr)))
-        print("angle: " + str(angle) + " done!")
+
+        if verbose:
+            print("angle: " + str(angle) + " done!")
 
     return allSums
 
@@ -78,26 +96,3 @@ def findTopKValues(array, k = 8):
     maxIndices = list(set(maxIndices))
     maxIndices.sort()
     return maxIndices
-
-
-########################################################################################
-# Throw-away function to have the test pipeline stored
-def testAutoCorrelation():
-
-    image = Image.open('./Test Segments/10.png')
-    image = np.array(image)
-
-    corr = calculateAutoCorrelationMatrix(image)
-    print(corr)
-    print(corr*255)
-    im = Image.fromarray(corr*255)
-    im = im.convert('L')
-    im.save('./Test Segments/c10.png')
-
-    directions = summedCorrelationPerDirection(corr)
-    print(directions)
-
-    bestDirections = findTopKValues(directions)
-    print(bestDirections)
-
-# testAutoCorrelation()

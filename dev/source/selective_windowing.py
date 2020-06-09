@@ -1,59 +1,8 @@
 
 import numpy as np
-from helper import *
 
-import matplotlib.mlab as mlab
-import matplotlib.pyplot as plt
-
-def findWindows():
-    binaryImage = getBinaryDummyImage('dummy.jpg')
-    # showBinaryImage(binaryImage)
-
-    windows = generateWindows(binaryImage)
-
-    significantWindows = filterWindows(binaryImage, windows)
-    windows = significantWindows
-
-    centers = generateAllCenterOfGravities(binaryImage, windows)
-
-    imageRGB = convertToRGBImage(binaryImage)
-    windowedImage = addWindows(imageRGB, windows)
-    imageWithCenter = drawCentrePoint(windowedImage, centers)
-    showRGBImage(windowedImage)
-
-def projectionTransform(image, threshold = 0.01, alongXAxis = True):
-
-    (height, width) = np.shape(image)
-
-    if alongXAxis:
-        image = image.T
-
-    histogram = np.zeros(width)
-    for index, segment in enumerate(image):
-        histogram[index] = sum(segment)
-    
-    minimumLinePositions = []
-
-    maximum = max(histogram)
-    valueThreshold = maximum * threshold
-    print("Thresholded Projection Transform at: ", valueThreshold)
-
-    for index, line in enumerate(histogram):
-        if line <= valueThreshold:
-            minimumLinePositions.append(index)
-
-    return minimumLinePositions
-
-def generateWindows(image, windowSize = 40, stepSize = 1):
-    # StepSize >1 is currently broken, but also not necessary...
-
-    (height, width) = np.shape(image)
-
-    listOfWindows = []
-    for i in range(int((width-windowSize-1)/stepSize+1)):
-        listOfWindows.append( (i*stepSize, windowSize) )
-
-    return listOfWindows
+#####################################################################
+## Criteria for selection
 
 def generateCenterOfGravity(image, window):
 
@@ -88,6 +37,34 @@ def generateAllCenterOfGravities(image, windows):
         allGravityPoints.append(center)
 
     return allGravityPoints
+
+def calculatePixelDensityOfWindow(image, window):
+    # Needs optimization, really inefficient right now...
+
+    (height, width) = np.shape(image)
+    (windowStart, windowSize) = window
+
+    counter = 0
+    for y in range(height):
+        for x in range(windowStart, windowStart+windowSize):
+            if image[y,x] == 1:
+                counter += 1
+
+    return counter/(height * windowSize)
+
+#####################################################################
+## Determining the Windows and selecting the proper ones
+
+def generateWindows(image, windowSize = 40, stepSize = 1):
+    # StepSize >1 is currently broken, but also not necessary...
+
+    (height, width) = np.shape(image)
+
+    listOfWindows = []
+    for i in range(int((width-windowSize-1)/stepSize+1)):
+        listOfWindows.append( (i*stepSize, windowSize) )
+
+    return listOfWindows
 
 def determineSignificantDeltas(image, windows):
 
@@ -139,3 +116,32 @@ def filterWindows(image, windows, minDensity = 0.06):
             previousWindow = window
 
     return survivingWindows
+
+
+########################################################################################
+# Throw-away function to have the test pipeline stored
+
+
+
+# def projectionTransform(image, threshold = 0.01, alongXAxis = True):
+
+#     (height, width) = np.shape(image)
+
+#     if alongXAxis:
+#         image = image.T
+
+#     histogram = np.zeros(width)
+#     for index, segment in enumerate(image):
+#         histogram[index] = sum(segment)
+    
+#     minimumLinePositions = []
+
+#     maximum = max(histogram)
+#     valueThreshold = maximum * threshold
+#     print("Thresholded Projection Transform at: ", valueThreshold)
+
+#     for index, line in enumerate(histogram):
+#         if line <= valueThreshold:
+#             minimumLinePositions.append(index)
+
+#     return minimumLinePositions
