@@ -15,12 +15,12 @@ images = lineSegmentAStar(rotatedImage)
 
 for i in range(0,len(images)):
     images[i] = np.transpose(images[i])
-    if SAVEPICTURES: cv.imwrite("line_" + str(i) + ".bmp", (1 - images[i]) * 255)
+    if SAVEPICTURES: cv.imwrite("results/line_" + str(i) + ".bmp", (1 - images[i]) * 255)
 
 slantAngles = []
 for i in range(0,len(images)):
     slantAngle, dst = slantNormalize(images[i])
-    if SAVEPICTURES: cv.imwrite("line_" + str(i) + "_deslanted.bmp", (1 - dst) * 255)
+    if SAVEPICTURES: cv.imwrite("results/line_" + str(i) + "_deslanted.bmp", (1 - dst) * 255)
     images[i] = dst
     slantAngles.append(slantAngle)
 
