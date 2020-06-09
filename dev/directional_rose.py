@@ -79,6 +79,8 @@ def findTopKValues(array, k = 8):
     maxIndices.sort()
     return maxIndices
 
+
+########################################################################################
 # Throw-away function to have the test pipeline stored
 def testAutoCorrelation():
 
@@ -98,5 +100,4 @@ def testAutoCorrelation():
     bestDirections = findTopKValues(directions)
     print(bestDirections)
 
-
-testAutoCorrelation()
+# testAutoCorrelation()
