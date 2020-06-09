@@ -17,6 +17,8 @@ minV = min(corr);
 maxV = max(corr);
 corr = (corr-minV)./(maxV-minV);
 
+corr
+
 %% New Line finder
 
 f = 10;
@@ -73,7 +75,7 @@ directions = 8;
 %% plot each significant direction on the image
 
 % bestDirections = round(C(:,2))
-% bestDirections = [148, 156, 157, 158, 161, 162, 163, 165];
+bestDirections = [148, 156, 157, 158, 161, 162, 163, 165];
 bestDirections = i;
 for k = 1:length(bestDirections)
 

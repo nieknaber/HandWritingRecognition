@@ -5,6 +5,8 @@ from helper import *
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
+
+
 def findWindows():
     binaryImage = getBinaryDummyImage('dummy.jpg')
     # showBinaryImage(binaryImage)

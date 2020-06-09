@@ -54,8 +54,8 @@ i = np.array(i)
 (left, right) = createWindowsFromTrainingImage(i,windowSize)
 segments = createFeatureSegments(left, segmentSize)
 
-# i = 1
-# for s in segments:
-#     s = Image.fromarray(s)
-#     s.save("./Test Segments/" + str(i) + ".png")
-#     i += 1
+i = 1
+for s in segments:
+    s = Image.fromarray(s)
+    s.save("./Test Segments/" + str(i) + ".png")
+    i += 1
