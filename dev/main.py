@@ -1,13 +1,14 @@
 
 from source import selective_windowing as window
 from source import directional_rose as rose
+from source import training as train
 
 from source import helper as h
 from source import data_preparation as prep
 
 def testWindowPipeline():
     binaryImage = h.getBinaryDummyImage('resources/dummy.jpg')
-    # h.showBinaryImage(binaryImage)
+    h.showBinaryImage(binaryImage)
 
     allWindows = window.generateWindows(binaryImage)
     windows = window.filterWindows(binaryImage, allWindows)
@@ -36,6 +37,10 @@ def testDataPreparation():
     segments = prep.createFeatureSegments(left, segmentSize)
     prep.saveSegmentsAsImages(segments, 'resources/test_segments/')
 
-# testWindowPipeline()
-# testFindingBestDirections()
-# testDataPreparation()
+def testTraining():
+    (trainset, testset) = train.get_data()
+    net = train.Net()
+    train.train_network(net, trainset)
+    train.test_network(net, testset)
+
+testTraining()
