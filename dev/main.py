@@ -31,16 +31,41 @@ def testDataPreparation():
     segmentSize = (16,16)
     windowSize = (16*6, 16*2) # 96,32
 
-    prep.resizeAllImages((96,64), 'resources/herodian', 'resources/resized_herodian')
+    prep.resizeAllImages((96,64-16), 'resources/herodian', 'resources/resized_herodian')
 
-    (left, right) = prep.createWindowsFromTrainingImage('resources/resized_herodian/Alef_19.png', windowSize)
-    segments = prep.createFeatureSegments(left, segmentSize)
-    prep.saveSegmentsAsImages(segments, 'resources/test_segments/')
+    # (left, right) = prep.createWindowsFromTrainingImage('resources/resized_herodian/Alef_19.png', windowSize)
+    # segments = prep.createFeatureSegments(left, segmentSize)
+    # prep.saveSegmentsAsImages(segments, 'resources/test_segments/')
+
+def testConvertResizedSegmentsIntoDirections():
+    
+    data = prep.covertResizedSegmentsIntoDirections('resources/resized_herodian')
+
+    trainData = []
+
+    length = len(data)
+    for i, point in enumerate(data):
+        (allSegments, label) = point
+
+        linedUpDirections = []
+        for segment in allSegments:
+            corr = rose.calculateAutoCorrelationMatrix(segment)
+            sumForDirections = rose.summedCorrelationPerDirection(corr)
+            bestDirections = rose.findTopKValues(sumForDirections)
+
+            linedUpDirections.append(bestDirections)
+        
+        prep.saveDirectionsToFile(linedUpDirections, "resources/converted_directions/" + str(label) + "_" + str(i) + ".csv")
+        
+        print(str(i) + "/" + str(length))
 
 def testTraining():
-    (trainset, testset) = train.get_data()
+    data = prep.loadAllData('resources/converted_directions')
+    (trainset, testset) = train.splitData(data)
+
     net = train.Net()
+
     train.train_network(net, trainset)
     train.test_network(net, testset)
-
+        
 testTraining()

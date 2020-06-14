@@ -18,9 +18,8 @@ def openImageFromLocation(filename):
 #####################################################################
 ## Correlation -> Directions -> Best directions
 
-def calculateAutoCorrelationMatrix(image_filename):
-
-    image = openImageFromLocation(image_filename)
+def calculateAutoCorrelationMatrix(image):
+    # image = openImageFromLocation(image_filename)
 
     # Calculate the autocorrelation via FFT stuff
     fftImage = np.fft.fft2(image)
@@ -32,6 +31,8 @@ def calculateAutoCorrelationMatrix(image_filename):
     maximum = np.max(step)
     minimum = np.min(step)
     denom = maximum - minimum
+    if denom == 0:
+        denom = 1
     normalized = step.copy()
     (h, w) = np.shape(image)
     for i in range(h):
@@ -42,7 +43,7 @@ def calculateAutoCorrelationMatrix(image_filename):
 
 # Calculates the summed correlation values for each direction in 180 degrees
 # f is the sampling rate of the pixels
-def summedCorrelationPerDirection(corr, f = 10, verbose = False):
+def summedCorrelationPerDirection(corr, f = 5, verbose = False):
 
     (h, w) = np.shape(corr)
 
@@ -63,17 +64,21 @@ def summedCorrelationPerDirection(corr, f = 10, verbose = False):
 
             for y in range(1,dim*f):
                 offsetY = y - (dim*f/2)
-                offsetX = x - (dim*f/2)
 
-                if lineY >= (y-(dim*f/2)) and lineY <= (y-(dim*f/2)+1):
+                if lineY >= offsetY and lineY <= offsetY+1:
                     foundX = int(np.ceil(x/f))
                     foundY = int(np.ceil(y/f))
                     
                     if lut[foundY-1, foundX-1] == 0:
                         values.append(corr[foundY-1,foundX-1])
                         lut[foundY-1,foundX-1] = 1
+                        break
 
-        allSums.append((np.sum(values)-np.min(corr))/(np.max(corr)-np.min(corr)))
+        denom = np.max(corr)-np.min(corr)
+        if denom == 0:
+            denom = 1
+
+        allSums.append((np.sum(values)-np.min(corr))/denom)
 
         if verbose:
             print("angle: " + str(angle) + " done!")
@@ -91,8 +96,9 @@ def findTopKValues(array, k = 8):
     for i in topK:
         for index, item in enumerate(array):
             if item == i:
-                maxIndices.append(index)
-                
-    maxIndices = list(set(maxIndices))
+                maxIndices.append(int(index))
+                maxIndices = list(set(maxIndices))
+    
+    maxIndices = maxIndices[:k]
     maxIndices.sort()
     return maxIndices
