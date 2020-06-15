@@ -6,13 +6,16 @@ import numpy as np
 
 from torchvision import transforms, datasets
 
+num_segments = 6*3
+num_top_k = 8
+
 def splitData(data):
     random.shuffle(data)
 
     split = 0.9
     length = len(data)
-    trainset = data[:int(0.9*length)]
-    testset = data[int(0.9*length):]
+    trainset = data[:int(split*length)]
+    testset = data[int(split*length):]
 
     return (trainset, testset)
 
@@ -22,7 +25,7 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.fc1 = nn.Linear(96, 64)
+        self.fc1 = nn.Linear(num_segments * num_top_k, 64)
         self.fc2 = nn.Linear(64, 64)
         self.fc3 = nn.Linear(64, 64)
         self.fc4 = nn.Linear(64, 27)
@@ -54,17 +57,19 @@ def get_index(label):
         if item == 1:
             return i
 
-def train_network(net, trainset):
-    loss_function = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr = 0.001)
+def train_network(net, trainset, testset):
+    # loss_function = nn.CrossEntropyLoss()
+    loss_function = nn.NLLLoss()
+    # optimizer = optim.Adam(net.parameters(), lr = 0.00005)
+    optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.8)
 
-    for epoch in range(50):
+    for epoch in range(100):
         for data in trainset:
             X, y = data
             net.zero_grad()
 
             X = torch.tensor(X).float()
-            output = net(X.view(-1, 96))
+            output = net(X.view(-1, num_segments * num_top_k))
 
             y = get_index(y.lower())
             y = torch.tensor([y])
@@ -73,6 +78,7 @@ def train_network(net, trainset):
             loss.backward()
             optimizer.step()
         print(loss)
+        test_network(net, testset)
 
 def test_network(net, testset):
     correct = 0
@@ -83,15 +89,13 @@ def test_network(net, testset):
             X, y = data
 
             X = torch.tensor(X).float()
-            output = net(X.view(-1,96))
+            output = net(X.view(-1,num_segments * num_top_k))
 
-            for idx, i in enumerate(output):
+            y = get_index(y.lower())
+            y = torch.tensor([y])
+
+            if torch.argmax(output) == y:
+                correct += 1
+            total += 1
                 
-                y = get_index(y.lower())
-                y = torch.tensor([y])
-
-                if torch.argmax(i) == y[idx]:
-                    correct += 1
-                total += 1
-
     print("Accuracy: ", round(correct/total, 3))

@@ -42,11 +42,14 @@ def createWindowsFromTrainingImage(filename, windowSize):
 
     return (left, right)
 
-def createFeatureSegments(window, segmentSize):
+def createFeatureSegments(window, segmentSize, windowSize):
+    (h,w) = segmentSize
+    (x,y) = windowSize
+
     segments = []
-    for i in range(6):
-        for j in range(2):
-            segments.append(window[i*16:(i+1)*16,j*16:(j+1)*16])
+    for i in range(int(x/h)):
+        for j in range(int(y/w)):
+            segments.append(window[i*h:(i+1)*h,j*h:(j+1)*h])
     return segments
 
 def saveSegmentsAsImages(segments, location):
@@ -59,9 +62,9 @@ def saveSegmentsAsImages(segments, location):
 #####################################################################
 ## Converting all images to directions
 
-def covertResizedSegmentsIntoDirections(fromLocation, type = ".png"):
-    segmentSize = (16,16)
-    windowSize = (16*6, 16*2) # 96,32
+def covertResizedSegmentsIntoDirections(fromLocation, segmentSize, windowSize, type = ".png"):
+    # segmentSize = (16,16)
+    # windowSize = (16*6, 16*3) # 96,32
 
     data = []
 
@@ -73,11 +76,11 @@ def covertResizedSegmentsIntoDirections(fromLocation, type = ".png"):
                 imagePath = fromLocation + '/' + character
 
                 (left, right) = createWindowsFromTrainingImage(imagePath, windowSize)
-                leftSegments = createFeatureSegments(left, segmentSize)
-                rightSegments = createFeatureSegments(right, segmentSize)
+                leftSegments = createFeatureSegments(left, segmentSize, windowSize)
+                # rightSegments = createFeatureSegments(right, segmentSize)
 
                 data.append((leftSegments, label))
-                data.append((rightSegments, label))
+                # data.append((rightSegments, label))
 
     return data
 

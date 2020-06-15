@@ -27,19 +27,23 @@ def testFindingBestDirections():
     sumForDirections = rose.summedCorrelationPerDirection(corr)
     bestDirections = rose.findTopKValues(sumForDirections)
 
-def testDataPreparation():
-    segmentSize = (16,16)
-    windowSize = (16*6, 16*2) # 96,32
 
-    prep.resizeAllImages((96,64-16), 'resources/herodian', 'resources/resized_herodian')
+
+segmentSize = (30,30)
+windowSize = (30*6, 30*3)
+
+def testDataPreparation():
+
+    prep.resizeAllImages(windowSize, 'resources/herodian', 'resources/resized_herodian')
 
     # (left, right) = prep.createWindowsFromTrainingImage('resources/resized_herodian/Alef_19.png', windowSize)
     # segments = prep.createFeatureSegments(left, segmentSize)
     # prep.saveSegmentsAsImages(segments, 'resources/test_segments/')
 
 def testConvertResizedSegmentsIntoDirections():
+
     
-    data = prep.covertResizedSegmentsIntoDirections('resources/resized_herodian')
+    data = prep.covertResizedSegmentsIntoDirections('resources/resized_herodian', segmentSize, windowSize)
 
     trainData = []
 
@@ -51,11 +55,11 @@ def testConvertResizedSegmentsIntoDirections():
         for segment in allSegments:
             corr = rose.calculateAutoCorrelationMatrix(segment)
             sumForDirections = rose.summedCorrelationPerDirection(corr)
-            bestDirections = rose.findTopKValues(sumForDirections)
+            bestDirections = rose.findTopKValues(sumForDirections, k=8)
 
             linedUpDirections.append(bestDirections)
         
-        prep.saveDirectionsToFile(linedUpDirections, "resources/faster_converted_directions/" + str(label) + "_" + str(i) + ".csv")
+        prep.saveDirectionsToFile(linedUpDirections, "resources/converted_directions/" + str(label) + "_" + str(i) + ".csv")
         
         print(str(i) + "/" + str(length))
 
@@ -65,7 +69,7 @@ def testTraining():
 
     net = train.Net()
 
-    train.train_network(net, trainset)
+    train.train_network(net, trainset, testset)
     train.test_network(net, testset)
         
-testConvertResizedSegmentsIntoDirections()
+testTraining()
