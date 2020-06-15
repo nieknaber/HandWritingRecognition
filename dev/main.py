@@ -55,7 +55,7 @@ def testConvertResizedSegmentsIntoDirections():
 
             linedUpDirections.append(bestDirections)
         
-        prep.saveDirectionsToFile(linedUpDirections, "resources/converted_directions/" + str(label) + "_" + str(i) + ".csv")
+        prep.saveDirectionsToFile(linedUpDirections, "resources/faster_converted_directions/" + str(label) + "_" + str(i) + ".csv")
         
         print(str(i) + "/" + str(length))
 
@@ -68,4 +68,4 @@ def testTraining():
     train.train_network(net, trainset)
     train.test_network(net, testset)
         
-testTraining()
+testConvertResizedSegmentsIntoDirections()

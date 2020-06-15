@@ -43,37 +43,38 @@ def calculateAutoCorrelationMatrix(image):
 
 # Calculates the summed correlation values for each direction in 180 degrees
 # f is the sampling rate of the pixels
-def summedCorrelationPerDirection(corr, f = 5, verbose = False):
+def summedCorrelationPerDirection(corr, verbose = False):
 
     (h, w) = np.shape(corr)
-
-    dim = 0
-    if h == w:
-        dim = h
+    dim = h
 
     allSums = []
-
     for angle in range(1,181):
+
         values = []
         lut = np.zeros(shape=(dim,dim))
+
         rad = angle * np.pi / 180
         slope = np.cos(rad)/np.sin(rad)
 
-        for x in range(1,dim*f):
-            lineY = slope * (x-(dim*f/2))
+        for y in range(0,dim):
+            for x in range(0,dim):
+                xOff = x - dim/2
+                yOff = y - dim/2
+                lineY = slope * xOff
+                lineX = yOff / slope
+                
+                found = False
+                if not (lineY < yOff or lineY > yOff+1):
+                    found = True
+                
+                if not (lineX < xOff or lineX > xOff+1):
+                    found = True
 
-            for y in range(1,dim*f):
-                offsetY = y - (dim*f/2)
-
-                if lineY >= offsetY and lineY <= offsetY+1:
-                    foundX = int(np.ceil(x/f))
-                    foundY = int(np.ceil(y/f))
-                    
-                    if lut[foundY-1, foundX-1] == 0:
-                        values.append(corr[foundY-1,foundX-1])
-                        lut[foundY-1,foundX-1] = 1
-                        break
-
+                if found and lut[y, x] == 0:
+                    values.append(corr[y,x])
+                    lut[y,x] = 1
+        
         denom = np.max(corr)-np.min(corr)
         if denom == 0:
             denom = 1
