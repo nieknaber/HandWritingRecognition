@@ -7,11 +7,13 @@ from src.SlantNormalization.slantNormalize import *
 
 SAVEPICTURES = True # set to false if you do not want to save pictures in between steps
 
-img = getImage("images/20.jpg")
+img = getImage("images/04.jpg")
 rotatedImage, slope = findSlope(img, 10, 1)
 print("Best angle: ", slope)
 
 images = lineSegmentAStar(rotatedImage)
+print("done")
+sys.exit()
 
 for i in range(0,len(images)):
     images[i] = np.transpose(images[i])
