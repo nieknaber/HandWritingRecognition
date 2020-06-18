@@ -79,19 +79,23 @@ def getBackgroundSet(d):
 
     return dSet
 
-def polygon_area(x,y):
-    #https://stackoverflow.com/a/49129646/9664782
-    correction = x[-1] * y[0] - y[-1]* x[0]
-    main_area = np.dot(x[:-1], y[1:]) - np.dot(y[:-1], x[1:])
-    return 0.5*np.abs(main_area + correction)
+def getFeatureOne(lenHs, dSet):
+    f1 = []
+    for background in dSet:
+        f1.append(sum([sum(row) for row in background]) / lenHs)
 
-def get_coordinates(array):
-    coordinates = [tuple(coords) for coords in np.argwhere(array == np.max(array))]
-    x,y=[],[]
-    for t in coordinates:
-        x.append(t[0])
-        y.append(t[1])
-    return x,y
+    return f1
+
+# this does not work yet, I think we can do something with either one of these functions.
+# for the function fitEllipse the picture needs to be in coordinates form instead of a raster picture
+def getFeatureTwo(dSet):
+    f2 = []
+    for background in dSet:
+        out = cv.fitEllipse(background)
+        out = cv.moments(background)
+        print(out)
+
+
 
 def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
 
@@ -99,16 +103,12 @@ def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
         t, p = s.shape
         print(s.shape)
         hs = convex_hull_image(s).astype(np.uint8) # convex hull
+        lenHs = sum([sum(row) for row in hs])
         d = hs - s.astype(np.uint8) # convex deficiency
 
         dSet = getBackgroundSet(d) # set D_i from the paper. now contains 4 background sets. number 4 is hardcoded
-        hs=hs.astype(np.float)
-        for dominant_bac_set in dSet:
-            x_set,y_set=get_coordinates(dominant_bac_set)
-            x_hs,y_hs=get_coordinates(hs)
-
-            f1=abs(polygon_area(x_set, y_set))/abs(polygon_area(x_hs,y_hs))
-            print(f1)
+        f1 = getFeatureOne(lenHs, dSet)
+        f2 = getFeatureTwo(dSet)
 
     # use if you want to display a background set
     #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
