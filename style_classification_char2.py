@@ -79,21 +79,41 @@ def getBackgroundSet(d):
 
     return dSet
 
+def polygon_area(x,y):
+    #https://stackoverflow.com/a/49129646/9664782
+    correction = x[-1] * y[0] - y[-1]* x[0]
+    main_area = np.dot(x[:-1], y[1:]) - np.dot(y[:-1], x[1:])
+    return 0.5*np.abs(main_area + correction)
+
+def get_coordinates(array):
+    coordinates = [tuple(coords) for coords in np.argwhere(array == np.max(array))]
+    x,y=[],[]
+    for t in coordinates:
+        x.append(t[0])
+        y.append(t[1])
+    return x,y
+
 def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
 
     for s in [xTrain[0]]:
-        x, y = s.shape
+        t, p = s.shape
         print(s.shape)
         hs = convex_hull_image(s).astype(np.uint8) # convex hull
         d = hs - s.astype(np.uint8) # convex deficiency
 
         dSet = getBackgroundSet(d) # set D_i from the paper. now contains 4 background sets. number 4 is hardcoded
+        hs=hs.astype(np.float)
+        for dominant_bac_set in dSet:
+            x_set,y_set=get_coordinates(dominant_bac_set)
+            x_hs,y_hs=get_coordinates(hs)
 
+            f1=abs(polygon_area(x_set, y_set))/abs(polygon_area(x_hs,y_hs))
+            print(f1)
 
     # use if you want to display a background set
-    # cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
-    # cv.imshow("Window", 255 * dSet[0])
-    # cv.waitKey(0)
+    #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
+    #cv.imshow("Window", 255 * dSet[0])
+    #cv.waitKey(0)
 
 
 archaicFolder = "characters_training/Archaic/"
