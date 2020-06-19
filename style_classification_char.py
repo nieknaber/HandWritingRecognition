@@ -23,6 +23,7 @@ def trainModel(outputfile, xTrain, yTrain, xTest, yTest):
     print(xTrain.shape)
     print(x)
     print(y)
+    print(np.mean(yTest,axis=0))
 
     model = Sequential()
     model.add(Conv2D(64, kernel_size=16, activation='relu', input_shape=(x,y,1)))
@@ -34,7 +35,11 @@ def trainModel(outputfile, xTrain, yTrain, xTest, yTest):
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     print("fitting model...")
-    model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=3)
+    model.fit(xTrain, yTrain, validation_data=(xTest, yTest), epochs=1)
+
+    for i in range(0,len(xTest)):
+        print(model.predict(xTest[i]))
+        print(yTest[i])
 
 
 
@@ -64,7 +69,6 @@ def augment(imgs):
 
                 allChars.append(newImg)
                 # add different croppings
-
 
     return allChars, maxX, maxY
 
@@ -96,6 +100,7 @@ for char in characters:
     hasmoneanChars = [getImage(f.path) for f in os.scandir(hasmoneanFolder + char) if f.is_file() and f.path[-3:] == "png"]
     herodianChars = [getImage(f.path) for f in os.scandir(herodianFolder + char) if f.is_file() and f.path[-3:] == "png"]
 
+    print(np.shape(archaicChars[0]))
     aTrain, aTest = split(archaicChars)
     haTrain, haTest = split(hasmoneanChars)
     heTrain, heTest = split(herodianChars) 
@@ -125,8 +130,11 @@ for char in characters:
     yTest = to_categorical(yTest)
     xTest = augATest + augHaTest + augHeTest
 
+
+
     z = list(zip(xTrain, yTrain))
     random.shuffle(z)
     xTrain, yTrain = zip(*z)
+
 
     trainModel("./models/" + char, np.asarray(xTrain), np.asarray(yTrain), np.asarray(xTest), np.asarray(yTest))
