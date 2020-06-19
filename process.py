@@ -7,15 +7,16 @@ from src.SlantNormalization.slantNormalize import *
 
 SAVEPICTURES = True # set to false if you do not want to save pictures in between steps
 
-img = getImage("images/20.jpg")
+img = getImage("images/05.jpg")
 rotatedImage, slope = findSlope(img, 10, 1)
 print("Best angle: ", slope)
 
 images = lineSegmentAStar(rotatedImage)
-
+print("len(images)): ",len(images))
 for i in range(0,len(images)):
     images[i] = np.transpose(images[i])
     if SAVEPICTURES: cv.imwrite("line_" + str(i) + ".bmp", (1 - images[i]) * 255)
+    if SAVEPICTURES: print("saving picture ", i)
 
 slantAngles = []
 for i in range(0,len(images)):
