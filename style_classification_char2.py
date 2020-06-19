@@ -73,12 +73,13 @@ def getBackgroundSet(d):
 
     dSet = [] # contains in order d1 d2 d3 and d4
     for num in dNumbers:
-        img = np.zeros(output.shape)
+        img = np.zeros(output.shape, np.uint8)
         img[output == num] = 1
         dSet.append(img)
 
     return dSet
 
+# |Di| / |Hs|
 def getFeatureOne(lenHs, dSet):
     f1 = []
     for background in dSet:
@@ -86,22 +87,24 @@ def getFeatureOne(lenHs, dSet):
 
     return f1
 
-# this does not work yet, I think we can do something with either one of these functions.
-# for the function fitEllipse the picture needs to be in coordinates form instead of a raster picture
+# Minor(Di) / Major(Di)
 def getFeatureTwo(dSet):
-    f2 = []
+    
+    f2 = [] 
     for background in dSet:
-        out = cv.fitEllipse(background)
-        out = cv.moments(background)
-        print(out)
+        contours, _ = cv.findContours(background, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        if (len(contours[0]) >= 5):
+            _, (minor, major), _ = cv.fitEllipse(contours[0])
+            f2.append(minor / major)
+        else:
+            f2.append(1.0)
 
-
+    return f2
 
 def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
 
     for s in [xTrain[0]]:
         t, p = s.shape
-        print(s.shape)
         hs = convex_hull_image(s).astype(np.uint8) # convex hull
         lenHs = sum([sum(row) for row in hs])
         d = hs - s.astype(np.uint8) # convex deficiency
