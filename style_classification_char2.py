@@ -30,7 +30,7 @@ def augment(imgs):
                 max_label = i
                 max_size = sizes[i]
 
-        img2 = np.zeros(output.shape)
+        img2 = np.zeros(output.shape, np.uint8)
         img2[output == max_label] = 1
 
         newImg = cropWhiteSpace(img2) # crop image
@@ -102,7 +102,7 @@ def getFeatureTwo(dSet):
     return f2
 
 def getFeatureThree(dSet):
-    var = 5
+    return []
 
 def getFeatureFour(dSet):
 
@@ -115,12 +115,35 @@ def getFeatureFour(dSet):
 
     return f4
     
+def getFeatureFive(dSet):
 
+    f5 = []
+    for background in dSet:
+        out = cv.moments(background)
+        update = [out["nu11"], out["nu02"], out["nu20"], out["nu21"], out["nu12"]]
+        f5.extend(update)
+
+    return f5
+
+def getFeatureSix(b, lenHs):
+    x, y = b.shape
+    return [x * y / lenHs]
+
+def getFeatureSeven(b):
+    contours, _ = cv.findContours(b, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    if (len(contours[0]) >= 5):
+        _, (minor, major), _ = cv.fitEllipse(contours[0])
+        return [minor / major]
+    else:
+        return [1.0]
+
+def getFeatureEight(b):
+    return [b.shape[1] / b.shape[0]]
 
 def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
 
     for s in [xTrain[0]]:
-        t, p = s.shape
+        
         hs = convex_hull_image(s).astype(np.uint8) # convex hull
         lenHs = sum([sum(row) for row in hs])
         d = hs - s.astype(np.uint8) # convex deficiency
@@ -130,6 +153,10 @@ def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
         f2 = getFeatureTwo(dSet)
         f3 = getFeatureThree(dSet)
         f4 = getFeatureFour(dSet)
+        f5 = getFeatureFive(dSet)
+        f6 = getFeatureSix(s, lenHs)
+        f7 = getFeatureSeven(s)
+        f8 = getFeatureEight(s)
 
     # use if you want to display a background set
     #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
