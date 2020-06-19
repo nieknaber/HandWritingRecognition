@@ -110,7 +110,7 @@ def getFeatureFour(dSet):
     for background in dSet:
         contours, _ = cv.findContours(background, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         area = cv.contourArea(contours[0])
-        perimeter = cv.arcLength(contours[0])
+        perimeter = cv.arcLength(contours[0], True)
         f4.append(4 * np.pi * area / perimeter)
 
     return f4
