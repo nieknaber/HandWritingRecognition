@@ -101,6 +101,22 @@ def getFeatureTwo(dSet):
 
     return f2
 
+def getFeatureThree(dSet):
+    var = 5
+
+def getFeatureFour(dSet):
+
+    f4 = []
+    for background in dSet:
+        contours, _ = cv.findContours(background, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+        area = cv.contourArea(contours[0])
+        perimeter = cv.arcLength(contours[0])
+        f4.append(4 * np.pi * area / perimeter)
+
+    return f4
+    
+
+
 def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
 
     for s in [xTrain[0]]:
@@ -112,6 +128,8 @@ def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
         dSet = getBackgroundSet(d) # set D_i from the paper. now contains 4 background sets. number 4 is hardcoded
         f1 = getFeatureOne(lenHs, dSet)
         f2 = getFeatureTwo(dSet)
+        f3 = getFeatureThree(dSet)
+        f4 = getFeatureFour(dSet)
 
     # use if you want to display a background set
     #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
