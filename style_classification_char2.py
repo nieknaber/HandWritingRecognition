@@ -10,6 +10,9 @@ import random
 import numpy as np
 from skimage.morphology import convex_hull_image
 from PIL import Image
+from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsClassifier
+from statistics import stdev
 
 
 def augment(imgs):
@@ -42,8 +45,8 @@ def augment(imgs):
     return allChars, maxX, maxY
 
 def split(l, sp = 0.8):
-    splitA = int(sp * len(archaicChars))
-    return archaicChars[:splitA], archaicChars[splitA:]
+    splitA = int(sp * len(l))
+    return l[:splitA], l[splitA:]
 
 #works
 def getBackgroundSet(d):
@@ -111,7 +114,10 @@ def getFeatureFour(dSet):
         contours, _ = cv.findContours(background, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
         area = cv.contourArea(contours[0])
         perimeter = cv.arcLength(contours[0], True)
-        f4.append(4 * np.pi * area / perimeter)
+        if (perimeter != 0):
+            f4.append(4 * np.pi * area / perimeter)
+        else:
+            f4.append(0)
 
     return f4
     
@@ -140,23 +146,28 @@ def getFeatureSeven(b):
 def getFeatureEight(b):
     return [b.shape[1] / b.shape[0]]
 
-def getFeatures(outputfile, xTrain, yTrain, xTest, yTest):
+def getFeatures(xTrain):
 
-    for s in [xTrain[0]]:
-        
-        hs = convex_hull_image(s).astype(np.uint8) # convex hull
+    allFeatures = []
+    for b in xTrain:
+        features = []
+        hs = convex_hull_image(b).astype(np.uint8) # convex hull
         lenHs = sum([sum(row) for row in hs])
-        d = hs - s.astype(np.uint8) # convex deficiency
-
+        d = hs - b # convex deficiency
         dSet = getBackgroundSet(d) # set D_i from the paper. now contains 4 background sets. number 4 is hardcoded
-        f1 = getFeatureOne(lenHs, dSet)
-        f2 = getFeatureTwo(dSet)
-        f3 = getFeatureThree(dSet)
-        f4 = getFeatureFour(dSet)
-        f5 = getFeatureFive(dSet)
-        f6 = getFeatureSix(s, lenHs)
-        f7 = getFeatureSeven(s)
-        f8 = getFeatureEight(s)
+
+        features.extend(getFeatureOne(lenHs, dSet))
+        features.extend(getFeatureTwo(dSet))
+        features.extend(getFeatureThree(dSet))
+        features.extend(getFeatureFour(dSet))
+        features.extend(getFeatureFive(dSet))
+        features.extend(getFeatureSix(b, lenHs))
+        features.extend(getFeatureSeven(b))
+        features.extend(getFeatureEight(b))
+
+        allFeatures.append(features)
+
+    return np.array(allFeatures)
 
     # use if you want to display a background set
     #cv.namedWindow("Window", flags=cv.WINDOW_NORMAL)
@@ -189,9 +200,13 @@ for char in characters:
     hasmoneanChars = [getImage(f.path) for f in os.scandir(hasmoneanFolder + char) if f.is_file() and f.path[-3:] == "jpg"]
     herodianChars = [getImage(f.path) for f in os.scandir(herodianFolder + char) if f.is_file() and f.path[-3:] == "jpg"]
 
-    aTrain, aTest = split(archaicChars)
-    haTrain, haTest = split(hasmoneanChars)
-    heTrain, heTest = split(herodianChars) 
+    random.shuffle(archaicChars)
+    random.shuffle(hasmoneanChars)
+    random.shuffle(herodianChars)
+    
+    aTrain, aTest = split(archaicChars, 0.95)
+    haTrain, haTest = split(hasmoneanChars, 0.95)
+    heTrain, heTest = split(herodianChars, 0.95) 
 
     augATrain, x1, y1 = augment(aTrain)
     augATest, x2, y2 = augment(aTest)
@@ -206,11 +221,43 @@ for char in characters:
     yTest = [0] * len(augATest) + [1] * len(augHaTest) + [2] * len(augHeTest)
     xTest = augATest + augHaTest + augHeTest
 
-    z = list(zip(xTrain, yTrain))
-    random.shuffle(z)
-    xTrain, yTrain = zip(*z)
+    # z = list(zip(xTrain, yTrain))
+    # random.shuffle(z)
+    # xTrain, yTrain = zip(*z)
 
-    xTrain = [img for img in xTrain]
-    xTest = [img for img in xTest]
+    # xTrain = [img for img in xTrain]
+    # xTest = [img for img in xTest]
 
-    getFeatures("./models/" + char, np.asarray(xTrain), np.asarray(yTrain), np.asarray(xTest), np.asarray(yTest))
+    trainFeatures = getFeatures(xTrain)
+    testFeatures = getFeatures(xTest)
+    
+    pca = PCA(10)
+    trainTransformed = pca.fit_transform(trainFeatures)
+    testTransformed = pca.transform(testFeatures)
+    
+    # MAKES PERFORMANCE WORSE
+    # calculate z-score features
+    # numVectors, numFeatures = trainTransformed.shape
+    # zScores = np.zeros((numFeatures, 2))
+    # for i in range(numFeatures):
+    #     l = trainTransformed[:,i]
+    #     zScores[i, 0] = sum(l) / numVectors
+    #     zScores[i, 1] = stdev(l)
+
+    # for vec in range(numVectors):
+    #     for fet in range(numFeatures):
+    #         trainTransformed[vec, fet] =  (trainTransformed[vec, fet] - zScores[fet, 0]) / zScores[fet, 1]
+
+    # numVectors, numFeatures = testTransformed.shape
+    # for vec in range(numVectors):
+    #     for fet in range(numFeatures):
+    #         testTransformed[vec, fet] =  (testTransformed[vec, fet] - zScores[fet, 0]) / zScores[fet, 1]
+
+    n_neighbors = 3
+    knn = KNeighborsClassifier(n_neighbors)
+    knn.fit(trainTransformed, yTrain)
+
+    predictions = knn.predict(testTransformed)
+    print(predictions)
+    print(yTest)
+    print(sum(predictions == yTest) / len(predictions))
