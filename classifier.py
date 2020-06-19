@@ -31,7 +31,8 @@ class Classifier:
         votes = np.zeros(3)
         for (img, label) in zip(images, labels):
             style = self.classifySingle(img, label)
-            votes[style[0]] += 1
+            s = style[0]
+            if (s != -1): votes[style[0]] += 1
             print(style[0])
 
         print(votes)
@@ -43,7 +44,7 @@ class Classifier:
         
         num = self.charToNum[label]
 
-        test = features.getFeatures([image], num)
+        test = features.getFeatures(preprocess([image]), num)
         while (test.ndim != 2 and num != 1):
             num -= 1
             test = features.getFeatures([image], num)
