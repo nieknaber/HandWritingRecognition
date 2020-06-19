@@ -7,7 +7,7 @@ import numpy as np
 
 class Classifier:
 
-    def __init__(self, file, k = 11):
+    def __init__(self, file, k = 1):
         self.charToNum = {}
         self.charToDat = {}
         self.k = 11
@@ -68,7 +68,7 @@ class Classifier:
         return predictions
 
 
-classifier = Classifier("chars_num_backgrounds_zscore_lda.txt")
+classifier = Classifier("char_num_acc_lda_k1.txt")
 
 characters = [getImage("./characters_training/Archaic/Alef/Alef_00.jpg"), 
 getImage("./characters_training/Archaic/Alef/Alef_04.jpg"),

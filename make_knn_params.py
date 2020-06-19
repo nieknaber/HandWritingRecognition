@@ -16,7 +16,7 @@ characters.update([f.path[len(hasmoneanFolder):] for f in os.scandir(hasmoneanFo
 characters.update([f.path[len(herodianFolder):] for f in os.scandir(herodianFolder) if f.is_dir()]) 
 characters = sorted(list(characters))
 
-f = open("char_num_acc_lda_k11.txt","w+")
+f = open("char_num_acc_lda_k1.txt","w+")
 
 for char in characters:
     
@@ -46,7 +46,7 @@ for char in characters:
             
             trainTransformed, testTransformed, _ = zScoreTwoArrs(trainTransformed, testTransformed)
 
-            n_neighbors = 11
+            n_neighbors = 1
             knn = KNeighborsClassifier(n_neighbors)
             knn.fit(trainTransformed, yTrain)
 
@@ -55,7 +55,7 @@ for char in characters:
             accs.append(acc)
 
         tot = sum(accs) / len(accs)
-        print("1-fold accuracy of letter ", char, " with k 11, lda 2: ", tot, " num: ", num)
+        print("1-fold accuracy of letter ", char, " with k 1, lda 2: ", tot, " num: ", num)
         totAccs.append(tot)
 
     f.write(char + "\t" + str(np.argmax(totAccs) + 1) + "\t" + str(max(totAccs)) + "\n")
