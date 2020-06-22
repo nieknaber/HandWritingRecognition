@@ -7,10 +7,10 @@ import numpy as np
 
 class Classifier:
 
-    def __init__(self, file, k = 1):
+    def __init__(self, file, k = 3):
         self.charToNum = {}
         self.charToDat = {}
-        self.k = 11
+        self.k = k
         self.parseFile(file)
 
     def readData(self, char):
@@ -68,7 +68,7 @@ class Classifier:
         return predictions
 
 
-classifier = Classifier("char_num_acc_lda_k1.txt")
+classifier = Classifier("char_num_acc_lda_k3.txt")
 
 characters = [getImage("./characters_training/Archaic/Alef/Alef_00.jpg"), 
 getImage("./characters_training/Archaic/Alef/Alef_04.jpg"),

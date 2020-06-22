@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 from src.StyleClassification.features import *
 from src.StyleClassification.helper import *
@@ -16,7 +17,13 @@ characters.update([f.path[len(hasmoneanFolder):] for f in os.scandir(hasmoneanFo
 characters.update([f.path[len(herodianFolder):] for f in os.scandir(herodianFolder) if f.is_dir()]) 
 characters = sorted(list(characters))
 
-f = open("char_num_acc_lda_k1.txt","w+")
+if (len(sys.argv) > 1):
+    k = int(sys.argv[1])
+else:
+    k = 3
+
+filename = "char_num_acc_lda_k" + str(k) + ".txt"
+f = open(filename,"w+")
 
 for char in characters:
     
@@ -46,7 +53,7 @@ for char in characters:
             
             trainTransformed, testTransformed, _ = zScoreTwoArrs(trainTransformed, testTransformed)
 
-            n_neighbors = 1
+            n_neighbors = k
             knn = KNeighborsClassifier(n_neighbors)
             knn.fit(trainTransformed, yTrain)
 
