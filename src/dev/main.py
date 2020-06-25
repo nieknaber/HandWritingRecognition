@@ -70,6 +70,11 @@ def testTraining():
     net = train.Net()
 
     train.train_network(net, trainset, testset)
+    print("on train set: ")
+    train.test_network(net, trainset)
+    print("on test set: ")
     train.test_network(net, testset)
-        
+
+# do uncomment this line below once before training!
+# testConvertResizedSegmentsIntoDirections()        
 testTraining()
