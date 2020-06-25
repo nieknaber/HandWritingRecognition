@@ -99,3 +99,21 @@ def test_network(net, testset):
             total += 1
                 
     print("Accuracy: ", round(correct/total, 3))
+
+def evaluate_directions_with_model(model_path, directions):
+    net = Net()
+    net.load_state_dict(torch.load(model_path))
+    net.eval()
+
+    with torch.no_grad():
+        for data in directions:
+            print(data)
+            X = torch.tensor(data).float()
+            output = net(X.view(-1,num_segments * num_top_k))
+            print(torch.argmax(output))
+            # y = get_index(y.lower())
+            # y = torch.tensor([y])
+
+            # if torch.argmax(output) == y:
+            #     correct += 1
+            # total += 1
