@@ -8,7 +8,7 @@ def lineSegmentAStar(image):
     width = shape[1]
     proj = np.sum(image, 1)
     invproj = np.max(proj) - proj
-    peaks = signal.find_peaks(invproj, prominence = 0.2*np.max(proj))
+    peaks = signal.find_peaks(invproj, prominence = 0.2*np.max(invproj)) #0.2 is TUNEABLE
     past_peak = 0
     # Initializing AStar
     # Finding the valleys (inverted peaks) that represent lines and run a* algorithm
@@ -17,25 +17,35 @@ def lineSegmentAStar(image):
     for peak in peaks[0]:
         if(peak-past_peak>50):
             print("Running a* for peak ",peak)
-            points.insert(j, astar(np.transpose(image), (0, peak), (width-501, peak)))
+            points.insert(j, astar(np.transpose(image), (0, peak-10), (width-501, peak-10)))
         past_peak = peak
         j += 1
     images = []
     imageT = np.transpose(image)
     previous = 0 # set 0 so the first
     # for all lines
-    for i in range(0,len(points)):
+    print(len(points))
+    for i in range(0,len(points)+1):
+        print(i)
         newImage = np.zeros((5000, 5000)) #cropped later
-        for point in points[i]:
-            newImage[point[0]][0:point[1]] = imageT[point[0]][0:point[1]] #abracadabra
-        returnImage = newImage - previous
+        if i == len(points):
+            shape = np.shape(imageT)
+            for point in points[i-1]:
+                newImage[point[0]][point[1]:shape[1]] = imageT[point[0]][point[1]:shape[1]]
+            returnImage = newImage
+        else:
+            for point in points[i]:
+                newImage[point[0]][0:point[1]] = imageT[point[0]][0:point[1]] #abracadabra
+            returnImage = newImage - previous
+        print(np.sum(returnImage))
+        if(np.sum(returnImage)) < 500:
+            print("continuing because line at peak ",i," is too short")
+            continue
         previous = newImage
-
-        coords = cv.findNonZero(returnImage)          # Find all non-zero points (text)
-        x, y, w, h = cv.boundingRect(coords)        # Find minimum spanning bounding box
-        returnImage = returnImage[y:y + h, x:x + w]     # Crop the image
-
-        images.append(returnImage)
+        #images.append(returnImage)
+        coords = cv.findNonZero(returnImage)            # Find all non-zero points (text)
+        x, y, w, h = cv.boundingRect(coords)            # Find minimum spanning bounding box
+        images.append(returnImage[y:y + h, x:x + w])    # Crop the image and append to all images
     return images
 
 
@@ -70,10 +80,11 @@ def astar(array, start, goal):
         for i, j in neighbors:
             neighbor = current[0] + i, current[1] + j
             tentative_g_score = gscore[current] + heuristic(current, neighbor)
+            #print(tentative_g_score)
             if 0 <= neighbor[0] < array.shape[0]:
                 if 0 <= neighbor[1] < array.shape[1]:
                     if array[neighbor[0]][neighbor[1]] == 1:
-                        continue
+                        tentative_g_score += 2500 # negative penalty for black pixels. TUNEABLE parameter!
                 else:
                     # array bound y walls
                     continue
