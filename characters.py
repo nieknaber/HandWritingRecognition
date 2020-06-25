@@ -23,6 +23,8 @@ class Character_Classification:
         directions_per_window = self.__get_directions(segments)
         classified_data = self.__classify_data(directions_per_window)
 
+        return (windows, classified_data)
+
     ### Private ###################################################
 
     def __get_windows(self):
@@ -41,17 +43,18 @@ class Character_Classification:
         return all_segments
 
     def __get_window_data(self, window):
-        (start, width) = self.window_size
-        window = self.line_of_characters[:,start:start+width]
-        return window
+        (start, width) = window
+        return self.line_of_characters[:,start:start+width]
 
     def __get_directions(self, segments):
         directions = []
         for window in segments:
-            segments = []
+            segments_data = []
             for segment in window:
-                segments.append(self.__find_best_directions_for_segment(segment))
-            directions.append(segments)
+                best_directions = self.__find_best_directions_for_segment(segment)
+                segments_data.append(best_directions)
+
+            directions.append(segments_data)
         return directions
 
     def __find_best_directions_for_segment(self, segment):
@@ -61,8 +64,8 @@ class Character_Classification:
         return best_directions
 
     def __classify_data(self, directions):
-        train.evaluate_directions_with_model(self.model_path, directions)
-
+        text = train.evaluate_directions_with_model(self.model_path, directions)
+        return text
 
 def test_Character_Classfication():
 
@@ -72,61 +75,11 @@ def test_Character_Classfication():
     model_path = './trained_models/model_dimension3_250_epochs.pt'
 
     cc = Character_Classification(segment_size, window_size, model_path)
-    cc.run_classification(dummy)
+    result = cc.run_classification(dummy)
+
+    (data, label) = result
+
+    print(data[0])
+    print(label)
     
-
 test_Character_Classfication()
-
-
-
-
-
-
-
-
-# def createWindowsFromTrainingImage(image, windowParams):
-
-#     (h,w) = np.shape(image)
-#     windows = []
-#     for windowParam in windowParams: 
-#         (height, width) = windowParam
-#         left = image[:,0:width]
-#         right = image[:,(w-width):]
-#         windows.append(left)
-#         windows.append(right)
-#     return windows
-
-
-
-# def getSegments(window, windowSize, segmentSize):
-#     return prep.createFeatureSegments(window, windowSize, segmentSize)
-
-# def classify(segments):
-#     #something here
-#     pass
-
-
-# # define params
-
-
-# # read img. I think this should be a line right?
-# img = h2.getImage("/home/niek/git/HandWritingRecognition/src/dev/resources/dummy.jpg")
-
-# # get windows for img
-# windows = getWindows(img, 30)
-# print(np.array(windows).shape)
-
-# # for each window get feature segments
-# segments = []
-# for w in windows:
-#     segments.append(getSegments(w, segmentSize, windowSize))
-
-# print(segments)
-
-# # create list of labels (character names) for all windows
-# labels = []
-# for segment in segments:
-#     labels.append(classify(segment))
-
-# after this the windows and labels are passed to style classifier
-

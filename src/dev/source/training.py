@@ -57,6 +57,8 @@ def get_index(label):
         if item == 1:
             return i
 
+characters_lookup = ["alef", "ayin", "bet", "dalet", "gimel", "he", "het", "kaf", "kaf-final", "lamed", "mem", "mem-medial", "nun-final", "nun-medial", "pe", "pe-final", "qof", "resh", "samekh", "shin", "taw", "tet", "tsadi-final", "tsadi-medial", "waw", "yod", "zayin"]
+
 def train_network(net, trainset, testset):
     # loss_function = nn.CrossEntropyLoss()
     loss_function = nn.NLLLoss()
@@ -105,15 +107,14 @@ def evaluate_directions_with_model(model_path, directions):
     net.load_state_dict(torch.load(model_path))
     net.eval()
 
+    characters = []
     with torch.no_grad():
         for data in directions:
-            print(data)
             X = torch.tensor(data).float()
             output = net(X.view(-1,num_segments * num_top_k))
-            print(torch.argmax(output))
-            # y = get_index(y.lower())
-            # y = torch.tensor([y])
+            output = torch.argmax(output)
+            character_number = output.item()
+            character_name = characters_lookup[character_number]
+            characters.append(character_name)
 
-            # if torch.argmax(output) == y:
-            #     correct += 1
-            # total += 1
+    return characters
