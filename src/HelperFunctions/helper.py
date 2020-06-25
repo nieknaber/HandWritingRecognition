@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 import cv2
-
+from statistics import stdev
 
 def getBinaryDummyImage(filename):
     image = Image.open(filename)
