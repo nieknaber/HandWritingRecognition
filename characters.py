@@ -37,7 +37,7 @@ segmentSize = (30,30)
 windowSize = (30*6, 30*3)
 
 # read img. I think this should be a line right?
-img = h2.getImage("/home/niek/git/HandWritingRecognition/src/dev/resources/Herodian/Alef/Alef_00.png")
+img = h2.getImage("/home/niek/git/HandWritingRecognition/src/dev/resources/dummy.jpg")
 
 # get windows for img
 windows = getWindows(img, 30)
@@ -46,7 +46,7 @@ print(np.array(windows).shape)
 # for each window get feature segments
 segments = []
 for w in windows:
-    segments.append(getSegments(w, windowSize, segmentSize))
+    segments.append(getSegments(w, segmentSize, windowSize))
 
 print(segments)
 
