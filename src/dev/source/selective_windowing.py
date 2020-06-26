@@ -9,20 +9,22 @@ def generateCenterOfGravity(image, window):
     (height, _) = np.shape(image)
     (windowStart, windowSize) = window
 
-    allXs = []
-    allYs = []
+    allXs = 0
+    allYs = 0
+    counter = 0
     for y in range(height):
         for x in range(windowStart, windowStart+windowSize):
             if image[y,x] == 1:
-                allXs.append(x)
-                allYs.append(y)
+                allXs += x
+                allYs += y
+                counter += 1
 
-    if allXs == []:
+    if allXs == 0:
         meanX = int(round(windowStart + windowSize/2))
         meanY = int(round(height/2))
     else:
-        meanX = int(round(np.mean(allXs),0))
-        meanY = int(round(np.mean(allYs),0))        
+        meanX = int(round(allXs/counter,0))
+        meanY = int(round(allYs/counter,0))        
 
     return (meanY, meanX)
 
@@ -45,10 +47,11 @@ def calculatePixelDensityOfWindow(image, window):
     (windowStart, windowSize) = window
 
     counter = 0
-    for y in range(height):
-        for x in range(windowStart, windowStart+windowSize):
-            if image[y,x] == 1:
-                counter += 1
+    window_data = image[:,windowStart:windowStart+windowSize]
+    flattened = window_data.flatten()
+    for pixel in flattened:
+        if pixel == 1:
+            counter += 1
 
     return counter/(height * windowSize)
 
@@ -69,6 +72,7 @@ def generateWindows(image, windowSize = 40, stepSize = 1):
 def determineSignificantDeltas(image, windows):
 
     allCenters = generateAllCenterOfGravities(image, windows)
+    print("all centers")
 
     allXs = []
     for center in allCenters:
@@ -89,6 +93,8 @@ def determineSignificantDeltas(image, windows):
         if delta > threshold:
             apartWindows.append(windows[i+1])
 
+    print("rest")
+
     return apartWindows
 
 def filterWindows(image, windows, minDensity = 0.06):
@@ -96,7 +102,7 @@ def filterWindows(image, windows, minDensity = 0.06):
     survivingWindows = []
 
     differentCenteredWindows = determineSignificantDeltas(image, windows)
-    # print("significant deltas")
+    
 
     previousWindow = None
     for window in differentCenteredWindows:
