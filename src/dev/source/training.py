@@ -61,9 +61,9 @@ def train_network(net, trainset, testset):
     # loss_function = nn.CrossEntropyLoss()
     loss_function = nn.NLLLoss()
     # optimizer = optim.Adam(net.parameters(), lr = 0.00005)
-    optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.8)
+    optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.5)
 
-    for epoch in range(100):
+    for epoch in range(500):
         for data in trainset:
             X, y = data
             net.zero_grad()
@@ -79,6 +79,10 @@ def train_network(net, trainset, testset):
             optimizer.step()
         print(loss)
         test_network(net, testset)
+
+        if (epoch % 50 == 0): 
+            print("saving")
+            torch.save(net.state_dict(), "/home/niek/git/HandWritingRecognition/model_dimension3_NLLL.pt")
 
 def test_network(net, testset):
     correct = 0
