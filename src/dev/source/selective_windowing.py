@@ -72,7 +72,6 @@ def generateWindows(image, windowSize = 40, stepSize = 1):
 def determineSignificantDeltas(image, windows):
 
     allCenters = generateAllCenterOfGravities(image, windows)
-    print("all centers")
 
     allXs = []
     for center in allCenters:
@@ -93,8 +92,6 @@ def determineSignificantDeltas(image, windows):
         if delta > threshold:
             apartWindows.append(windows[i+1])
 
-    print("rest")
-
     return apartWindows
 
 def filterWindows(image, windows, minDensity = 0.06):
@@ -102,16 +99,13 @@ def filterWindows(image, windows, minDensity = 0.06):
     survivingWindows = []
 
     differentCenteredWindows = determineSignificantDeltas(image, windows)
-    
 
     previousWindow = None
     for window in differentCenteredWindows:
-        # print("*** New window")
-
+        
         include = True
-
         density = calculatePixelDensityOfWindow(image, window)
-        # print("density")
+
         if density < minDensity: include = False
 
         if previousWindow != None:
