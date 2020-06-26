@@ -8,7 +8,6 @@ from src.dev.source import data_preparation as prep
 import numpy as np
 import torch
 import random
-
 import json
 
 class Network_Training():
