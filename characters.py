@@ -6,6 +6,7 @@ from src.dev.source import helper as h
 from src.dev.source import data_preparation as prep
 from src.StyleClassification import helper as h2
 import numpy as np
+import sys
 
 class Character_Classification:
 
@@ -38,8 +39,11 @@ class Character_Classification:
 
     def __resize_image(self, image):
         (height, width) = np.shape(image)
+        # h.showBinaryImage(image)
         (newHeight, _) = self.window_size
-        return prep.resizeImage(image, (newHeight, width))
+        resized_image = prep.resizeImage(image, (newHeight, width))
+        # h.showBinaryImage(resized_image)
+        return resized_image
         
     def __get_segments(self, windows):
         all_segments = []
@@ -77,9 +81,12 @@ class Character_Classification:
 
 def test_Character_Classfication():
 
-    segment_size = (30,30)
-    window_size = (30*6, 30*3)
-    dummy = h2.getImage("./test_data_lines/line_0_deslanted.bmp")
+    segment_dim = 30
+    window_dim = (6,3)
+
+    segment_size = (segment_dim, segment_dim)
+    window_size = (segment_dim*window_dim[0], segment_dim*window_dim[1])
+    dummy = h2.getImage("./test_data_lines/line_0.bmp")
     model_path = './trained_models/model_dimension3_250_epochs.pt'
 
     cc = Character_Classification(segment_size, window_size, model_path)
