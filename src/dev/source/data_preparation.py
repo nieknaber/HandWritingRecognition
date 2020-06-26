@@ -31,6 +31,31 @@ def resizeAllImages(resizedDimensions, fromLocation, toLocation, type = ".png"):
                         newImage = resizeImageFromFile(imagePath, resizedDimensions)
                         newImage.save(toLocation+ '/' +f)
 
+def getResizedImages(resizedDimensions, fromLocation, type = ".png"):
+
+    all_data = {}
+    characters = os.listdir(fromLocation)
+    for character in characters:
+        if not character.startswith('.'):
+            files = os.listdir(fromLocation + "/" + character)
+            for f in files:
+                if not f.startswith('.'):
+                    if f.endswith(type):
+                        label = f.split("_")[0].lower()
+                        imagePath = fromLocation + '/' + character + '/' + f
+                        newImage = resizeImageFromFile(imagePath, resizedDimensions)
+                        
+                        if label in all_data:
+                            previous_list = all_data[label]
+                            previous_list.append(newImage)
+                            all_data[label] = previous_list
+                        else:
+                            all_data[label] = [newImage]
+                        
+                        # newImage.save(toLocation+ '/' +f)
+
+    return all_data
+
 #####################################################################
 ## Creating and saving the Segments
 
@@ -66,9 +91,7 @@ def saveSegmentsAsImages(segments, location):
 #####################################################################
 ## Converting all images to directions
 
-def covertResizedSegmentsIntoDirections(fromLocation, segmentSize, windowSize, type = ".png"):
-    # segmentSize = (16,16)
-    # windowSize = (16*6, 16*3) # 96,32
+def convertResizedSegmentsIntoDirections(fromLocation, segmentSize, windowSize, type = ".png"):
 
     data = []
 

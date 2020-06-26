@@ -44,9 +44,9 @@ def testDataPreparation():
 
 def testConvertResizedSegmentsIntoDirections():
 
-    data = prep.covertResizedSegmentsIntoDirections('resources/resized_herodian', segmentSize, windowSize)
-    data.extend(prep.covertResizedSegmentsIntoDirections('resources/resized_archaic', segmentSize, windowSize))
-    data.extend(prep.covertResizedSegmentsIntoDirections('resources/resized_hasmonean', segmentSize, windowSize))
+    data = prep.conertResizedSegmentsIntoDirections('resources/resized_herodian', segmentSize, windowSize)
+    data.extend(prep.convertResizedSegmentsIntoDirections('resources/resized_archaic', segmentSize, windowSize))
+    data.extend(prep.convertResizedSegmentsIntoDirections('resources/resized_hasmonean', segmentSize, windowSize))
     # data.extend()
     trainData = []
 

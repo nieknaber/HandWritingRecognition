@@ -81,8 +81,11 @@ class Character_Classification:
 
 def test_Character_Classfication():
 
-    segment_size = (30,30)
-    window_size = (30*6, 30*3)
+    segment_dim = 30
+    window_dim = (6,3)
+
+    segment_size = (segment_dim, segment_dim)
+    window_size = (segment_dim*window_dim[0], segment_dim*window_dim[1])
     dummy = h2.getImage("./test_data_lines/line_0.bmp")
     model_path = './trained_models/model_dimension3_250_epochs.pt'
 
