@@ -8,11 +8,15 @@ from PIL import Image
 #####################################################################
 ## Resizing single or all training images
 
-def resizeImage(imageFileName, newSize):
+def resizeImageFromFile(imageFileName, newSize):
     (height, width) = newSize
     image = cv2.imread(imageFileName, cv2.IMREAD_UNCHANGED)
     resized = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
     return Image.fromarray(resized)
+
+def resizeImage(image, newSize):
+    (height, width) = newSize
+    return cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
 
 # Convert training data to windows
 def resizeAllImages(resizedDimensions, fromLocation, toLocation, type = ".png"):
@@ -24,7 +28,7 @@ def resizeAllImages(resizedDimensions, fromLocation, toLocation, type = ".png"):
                 if not f.startswith('.'):
                     if f.endswith(type):
                         imagePath = fromLocation + '/' + character + '/' + f
-                        newImage = resizeImage(imagePath, resizedDimensions)
+                        newImage = resizeImageFromFile(imagePath, resizedDimensions)
                         newImage.save(toLocation+ '/' +f)
 
 #####################################################################

@@ -96,13 +96,16 @@ def filterWindows(image, windows, minDensity = 0.06):
     survivingWindows = []
 
     differentCenteredWindows = determineSignificantDeltas(image, windows)
+    print("significant deltas")
 
     previousWindow = None
     for window in differentCenteredWindows:
+        print("*** New window")
 
         include = True
 
         density = calculatePixelDensityOfWindow(image, window)
+        print("density")
         if density < minDensity: include = False
 
         if previousWindow != None:

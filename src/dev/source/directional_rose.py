@@ -21,6 +21,8 @@ def openImageFromLocation(filename):
 def calculateAutoCorrelationMatrix(image):
     # image = openImageFromLocation(image_filename)
 
+    print(np.shape(image))
+
     # Calculate the autocorrelation via FFT stuff
     fftImage = np.fft.fft2(image)
     step = fftImage * fftImage.conjugate()

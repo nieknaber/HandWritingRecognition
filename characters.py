@@ -17,7 +17,7 @@ class Character_Classification:
     ### API #######################################################
 
     def run_classification(self, line_of_characters):
-        self.line_of_characters = line_of_characters
+        self.line_of_characters = self.__resize_image(line_of_characters)
         windows = self.__get_windows()
         segments = self.__get_segments(windows)
         directions_per_window = self.__get_directions(segments)
@@ -35,6 +35,11 @@ class Character_Classification:
         all_windows = window.generateWindows(self.line_of_characters, window_width)
         windows = window.filterWindows(self.line_of_characters, all_windows)
         return windows
+
+    def __resize_image(self, image):
+        (height, width) = np.shape(image)
+        (newHeight, _) = self.window_size
+        return prep.resizeImage(image, (newHeight, width))
         
     def __get_segments(self, windows):
         all_segments = []
@@ -74,7 +79,7 @@ def test_Character_Classfication():
 
     segment_size = (30,30)
     window_size = (30*6, 30*3)
-    dummy = h2.getImage("./src/dev/resources/dummy.jpg")
+    dummy = h2.getImage("./test_data_lines/line_0.bmp")
     model_path = './trained_models/model_dimension3_250_epochs.pt'
 
     cc = Character_Classification(segment_size, window_size, model_path)
