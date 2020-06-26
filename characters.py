@@ -79,7 +79,7 @@ def test_Character_Classfication():
 
     segment_size = (30,30)
     window_size = (30*6, 30*3)
-    dummy = h2.getImage("./test_data_lines/line_0.bmp")
+    dummy = h2.getImage("./test_data_lines/line_0_deslanted.bmp")
     model_path = './trained_models/model_dimension3_250_epochs.pt'
 
     cc = Character_Classification(segment_size, window_size, model_path)
