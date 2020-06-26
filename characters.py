@@ -23,7 +23,10 @@ class Character_Classification:
         directions_per_window = self.__get_directions(segments)
         classified_data = self.__classify_data(directions_per_window)
 
-        return (windows, classified_data)
+        windows_data = []
+        for window in windows:
+            windows_data.append(self.__get_window_data(window))
+        return (windows_data, classified_data)
 
     ### Private ###################################################
 
@@ -77,9 +80,9 @@ def test_Character_Classfication():
     cc = Character_Classification(segment_size, window_size, model_path)
     result = cc.run_classification(dummy)
 
-    (data, label) = result
+    (windows, labels) = result
 
-    print(data[0])
-    print(label)
+    print(windows[0])
+    print(labels)
     
 test_Character_Classfication()
