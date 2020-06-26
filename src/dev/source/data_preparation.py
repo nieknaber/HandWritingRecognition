@@ -12,7 +12,7 @@ def resizeImageFromFile(imageFileName, newSize):
     (height, width) = newSize
     image = cv2.imread(imageFileName, cv2.IMREAD_UNCHANGED)
     resized = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
-    return Image.fromarray(resized)
+    return resized
 
 def resizeImage(image, newSize):
     (height, width) = newSize
