@@ -6,6 +6,7 @@ from src.dev.source import helper as h
 from src.dev.source import data_preparation as prep
 
 import numpy as np
+import torch
 import random
 
 import json
@@ -22,9 +23,9 @@ class Network_Training():
         self.data_directories = data_directories
         self.verbose = verbose
 
-        self.data_path = './src/data_dumps/data.json'
+        self.data_path = './src/data_dumps/data_old.json'
         self.num_directions = 8
-        self.epochs = 200
+        self.epochs = 20
         self.num_inputs = self.num_directions * self.window_dim[0] * self.window_dim[1]
 
     def run_training(self):
@@ -33,6 +34,9 @@ class Network_Training():
 
         self.net = network.Net(self.num_inputs)
         self.net.train(train_data, self.epochs)
+        self.__save_network()
+
+    def run_testing(self):
         self.net.test(test_data)
     
     def __prepare_data(self, load_from_file = True):
@@ -47,8 +51,11 @@ class Network_Training():
         for directory in self.data_directories:
             new_data = prep.getResizedImages(self.window_size, directory)
             for key in new_data.keys():
+                key = key.lower()
                 if key in data:
-                    data[key] = data[key].extend(new_data[key])
+                    previous_list = data[key]
+                    previous_list.extend(new_data[key])
+                    data[key] = previous_list
                 else:
                     data[key] = new_data[key]
 
@@ -93,18 +100,17 @@ class Network_Training():
         testset = data[int(split*length):]
         return (trainset, testset)
 
-    def __test_network(self):
-        pass
-
     def __save_network(self):
-        pass
-
+        name = "model_" + str(self.epochs) + "_" + str(self.num_inputs) + ".pt"
+        torch.save(self.net.state_dict(), self.model_path + name)
+        print("Model saved.")
+    
 
 def test_Network_Training():
     
     segment_dim = 30
     window_dim = (6,3)
-    model_path = './trained_models/model_16x16_k8.pt'
+    model_path = './src/trained_models/'
 
     data_directories = [
          './src/characters_training/Herodian',
@@ -114,8 +120,7 @@ def test_Network_Training():
 
     net = Network_Training(segment_dim, window_dim, model_path, data_directories)
     net.run_training()
-
-
+    net.run_testing()
 
 
 test_Network_Training()
