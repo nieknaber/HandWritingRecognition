@@ -48,9 +48,12 @@ for image in images:
     imgs.extend(img)
     labels.extend(lab)
 
+newLabels = [label.capitalize() for label in labels]
+newImgs = [img.astype(np.uint8) for img in imgs]
+
 print("doint style classification")
 styleClassifier = Classifier("char_num_acc_lda_k3.txt", 3)
-style = styleClassifier.classifyList(imgs, labels)
+style = styleClassifier.classifyList(newImgs, newLabels)
 print(style)
 
 
