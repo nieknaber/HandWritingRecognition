@@ -34,7 +34,9 @@ windowSize = (30*6, 30*3)
 
 def testDataPreparation():
 
-    prep.resizeAllImages(windowSize, 'resources/herodian', 'resources/resized_herodian')
+    prep.resizeAllImages(windowSize, '/home/niek/git/HandWritingRecognition/characters_training/Herodian', 'resources/resized_herodian')
+    prep.resizeAllImages(windowSize, '/home/niek/git/HandWritingRecognition/characters_training/Archaic', 'resources/resized_archaic')
+    prep.resizeAllImages(windowSize, '/home/niek/git/HandWritingRecognition/characters_training/Hasmonean', 'resources/resized_herodian')
 
     # (left, right) = prep.createWindowsFromTrainingImage('resources/resized_herodian/Alef_19.png', windowSize)
     # segments = prep.createFeatureSegments(left, segmentSize)
@@ -42,9 +44,10 @@ def testDataPreparation():
 
 def testConvertResizedSegmentsIntoDirections():
 
-    
     data = prep.covertResizedSegmentsIntoDirections('resources/resized_herodian', segmentSize, windowSize)
-
+    data.extend(prep.covertResizedSegmentsIntoDirections('resources/resized_archaic', segmentSize, windowSize))
+    data.extend(prep.covertResizedSegmentsIntoDirections('resources/resized_hasmonean', segmentSize, windowSize))
+    # data.extend()
     trainData = []
 
     length = len(data)
@@ -75,6 +78,7 @@ def testTraining():
     print("on test set: ")
     train.test_network(net, testset)
 
-# do uncomment this line below once before training!
+# do uncomment this 2 lines below once before training!
+# testDataPreparation()
 # testConvertResizedSegmentsIntoDirections()        
 testTraining()
