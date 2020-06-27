@@ -85,7 +85,7 @@ class LineSegmentationController:
                     gscore[neighbor] = tentative_g_score
                     fscore[neighbor] = tentative_g_score + self.heuristic(neighbor, goal)
                     heappush(oheap, (fscore[neighbor], neighbor))
-        print("no route found")
+        # print("no route found")
         return []
 
     def find_peaks(self, image):
@@ -124,7 +124,7 @@ class LineSegmentationController:
         previous = 0  # Initialize variable that stores the previously processed line
         for i in range(0, len(points) + 1):
             new_image = np.zeros((image.shape[1], image.shape[0]))  # cropped later
-            print(new_image.shape)
+            # print(new_image.shape)
             if i == len(points):
                 shape = np.shape(image)
                 for point in points[i - 1]:
@@ -135,7 +135,7 @@ class LineSegmentationController:
                     new_image[point[0]][0:point[1]] = imageT[point[0]][0:point[1]]  # abracadabra
                 return_image = new_image - previous
             if (np.sum(return_image)) < self.min_line_size * np.sum(image):  # if a line has less than 1% of all black pixels
-                print("continuing because line at peak ", i, " is too short")
+                # print("continuing because line at peak ", i, " is too short")
                 continue
             previous = new_image
             coords = cv.findNonZero(return_image)  # Find all non-zero points (text)
