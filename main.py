@@ -2,6 +2,7 @@
 from src.character_classification_controller import Character_Classification_Controller
 from src.network_controller import Network_Controller
 from src.style_classification_controller import Style_Classifier
+from src.line_segmentation_controller import LineSegmentationController
 
 from src.data_preparation import helper as h
 
@@ -19,6 +20,20 @@ data_directories = [
          './src/resources/original/characters/Hasmonean',
          './src/resources/original/characters/Herodian'
     ]
+
+def test_line_segmentation():
+    image = h.getImage("image.jpg")
+
+    negative_y_penalty = 7.5
+    positive_y_penalty = 0
+    passthrough_black_penalty = 150
+    peak_prominence = 0.2
+    min_line_size = 0.01
+
+    segmenter = LineSegmentationController(negative_y_penalty,positive_y_penalty,passthrough_black_penalty,peak_prominence,min_line_size)
+    images = segmenter.segment_lines(image)
+    for image in images:
+        h.showBinaryImage(image)
 
 def test_Network_Training():
     
@@ -67,4 +82,5 @@ def test_style_classification():
     print(style)
     print(labels[1])
 
-test_style_classification()
+#test_style_classification()
+test_line_segmentation()
