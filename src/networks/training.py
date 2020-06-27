@@ -22,7 +22,7 @@ class Net(nn.Module):
         x = self.fc4(x)
         return F.log_softmax(x, dim = 1)
 
-    def train(self, data, epochs = 100, saved_network = True):
+    def train_with_data(self, data, epochs, saved_network = True):
         # loss_function = nn.CrossEntropyLoss()
         loss_function = nn.NLLLoss()
         # optimizer = optim.Adam(net.parameters(), lr = 0.00005)
@@ -45,7 +45,7 @@ class Net(nn.Module):
                 
             print(loss)
 
-    def test(self, data):
+    def test_with_data(self, data):
         correct = 0
         total = 0 
 
@@ -64,6 +64,24 @@ class Net(nn.Module):
                 total += 1
                     
         print("Accuracy: ", round(correct/total, 3))
+
+    def evaluate_samples_with_model(self, model_path, num_inputs, samples):
+        # net = Net(num_inputs)
+        # print(model_path, num_inputs, samples)
+        self.load_state_dict(torch.load(model_path))
+        self.eval()
+
+        characters = []
+        with torch.no_grad():
+            for data in samples:
+                X = torch.tensor(data).float()
+                output = self(X.view(-1, self.num_input))
+                output = torch.argmax(output)
+                character_number = output.item()
+                character_name = characters_lookup[character_number]
+                characters.append(character_name)
+
+        return characters
 
 def get_index(label):
     for i, c in enumerate(characters_lookup):

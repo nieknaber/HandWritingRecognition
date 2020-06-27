@@ -10,10 +10,11 @@ import sys
 
 class Character_Classification_Controller:
 
-    def __init__(self, segment_size, window_size, model_path):
+    def __init__(self, segment_size, window_size, model_path, num_inputs):
         self.segment_size = segment_size
         self.window_size = window_size
         self.model_path = model_path
+        self.num_inputs = num_inputs
 
     ### API #######################################################
 
@@ -75,6 +76,7 @@ class Character_Classification_Controller:
         best_directions = rose.findTopKValues(sum_of_directions)
         return best_directions
 
-    def __classify_data(self, directions):
-        text = train.evaluate_directions_with_model(self.model_path, directions)
+    def __classify_data(self, samples):
+        dummy_model = train.Net(self.num_inputs)
+        text = dummy_model.evaluate_samples_with_model(self.model_path, self.num_inputs, samples)
         return text

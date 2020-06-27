@@ -31,12 +31,12 @@ class Network_Controller():
         (train_data, test_data) = self.__split_data(data)
 
         self.net = network.Net(self.num_inputs)
-        self.net.train(train_data, self.epochs)
+        self.net.train_with_data(train_data, self.epochs)
 
         self.test_data = test_data
 
     def run_testing(self):
-        self.net.test(self.test_data)
+        self.net.test_with_data(self.test_data)
 
     def save_network(self, toPath):
         torch.save(self.net.state_dict(), toPath)
@@ -44,7 +44,7 @@ class Network_Controller():
 
     ### Private methods ################################################
     
-    def __prepare_data(self, load_from_file = True):
+    def __prepare_data(self, load_from_file):
 
         if load_from_file:
             with open(self.data_path, 'r') as fp:
