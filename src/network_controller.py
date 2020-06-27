@@ -1,42 +1,48 @@
 
-from src.dev.source import selective_windowing as window
-from src.dev.source import directional_rose as rose
-from src.dev.source import training as network
-from src.dev.source import helper as h
-from src.dev.source import data_preparation as prep
+from src.segmentation import selective_windowing as window
+from src.segmentation import directional_rose as rose
+from src.networks import training as network
+from src.data_preparation import data_preparation as prep
 
 import numpy as np
 import torch
 import random
 import json
 
-class Network_Training():
+class Network_Controller():
 
-    def __init__(self, segment_dim, window_dim, model_path, data_directories, verbose = True):
+    def __init__(self, segment_dim, window_dim, data_directories, num_directions, epochs, cached, verbose = True):
         self.segment_dim = segment_dim
         self.window_dim = window_dim
 
         self.segment_size = (segment_dim, segment_dim)
         self.window_size = (segment_dim*window_dim[0], segment_dim*window_dim[1])
-        self.model_path = model_path
         self.data_directories = data_directories
         self.verbose = verbose
 
-        self.data_path = './src/data_dumps/data_old.json'
-        self.num_directions = 8
-        self.epochs = 20
+        self.data_path = './src/cached_data/converted_images/data.json'
+        self.num_directions = num_directions
+        self.epochs = epochs
+        self.cached = cached
         self.num_inputs = self.num_directions * self.window_dim[0] * self.window_dim[1]
 
     def run_training(self):
-        data = self.__prepare_data()
+        data = self.__prepare_data(self.cached)
         (train_data, test_data) = self.__split_data(data)
 
         self.net = network.Net(self.num_inputs)
         self.net.train(train_data, self.epochs)
-        self.__save_network()
+
+        self.test_data = test_data
 
     def run_testing(self):
-        self.net.test(test_data)
+        self.net.test(self.test_data)
+
+    def save_network(self, toPath):
+        torch.save(self.net.state_dict(), toPath)
+        if self.verbose: print("Model saved.")
+
+    ### Private methods ################################################
     
     def __prepare_data(self, load_from_file = True):
 
@@ -97,29 +103,4 @@ class Network_Training():
         length = len(data)
         trainset = data[:int(split*length)]
         testset = data[int(split*length):]
-        return (trainset, testset)
-
-    def __save_network(self):
-        name = "model_" + str(self.epochs) + "_" + str(self.num_inputs) + ".pt"
-        torch.save(self.net.state_dict(), self.model_path + name)
-        print("Model saved.")
-    
-
-def test_Network_Training():
-    
-    segment_dim = 30
-    window_dim = (6,3)
-    model_path = './src/trained_models/'
-
-    data_directories = [
-         './src/characters_training/Herodian',
-         './src/characters_training/Archaic',
-         './src/characters_training/Hasmonean'
-    ]
-
-    net = Network_Training(segment_dim, window_dim, model_path, data_directories)
-    net.run_training()
-    net.run_testing()
-
-
-test_Network_Training()
+        return (trainset, testset)    

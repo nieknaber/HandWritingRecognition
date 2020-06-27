@@ -1,14 +1,14 @@
 
-from src.dev.source import selective_windowing as window
-from src.dev.source import directional_rose as rose
-from src.dev.source import training as train
-from src.dev.source import helper as h
-from src.dev.source import data_preparation as prep
-from src.StyleClassification import helper as h2
+from src.segmentation import selective_windowing as window
+from src.segmentation import directional_rose as rose
+from src.networks import training as train
+from src.data_preparation import helper as h
+from src.data_preparation import data_preparation as prep
+
 import numpy as np
 import sys
 
-class Character_Classification:
+class Character_Classification_Controller:
 
     def __init__(self, segment_size, window_size, model_path):
         self.segment_size = segment_size
@@ -78,23 +78,3 @@ class Character_Classification:
     def __classify_data(self, directions):
         text = train.evaluate_directions_with_model(self.model_path, directions)
         return text
-
-def test_Character_Classfication():
-
-    segment_dim = 30
-    window_dim = (6,3)
-
-    segment_size = (segment_dim, segment_dim)
-    window_size = (segment_dim*window_dim[0], segment_dim*window_dim[1])
-    dummy = h2.getImage("./test_data_lines/line_0.bmp")
-    model_path = './trained_models/model_dimension3_250_epochs.pt'
-
-    cc = Character_Classification(segment_size, window_size, model_path)
-    result = cc.run_classification(dummy)
-
-    (windows, labels) = result
-
-    print(windows[0])
-    print(labels)
-    
-test_Character_Classfication()

@@ -1,6 +1,8 @@
 
 import numpy as np
 from PIL import Image
+import cv2 as cv2
+from statistics import stdev
 
 def getBinaryDummyImage(filename):
     image = Image.open(filename)
@@ -38,6 +40,13 @@ def convertToRGBImage(image):
 
     return data
 
+def getImage(path):
+    
+    image = cv2.imread(path)
+    newBinarizedImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    ret, newBinarizedImage = cv2.threshold(newBinarizedImage, 127, 1, cv2.THRESH_BINARY_INV)
+
+    return newBinarizedImage
 
 ### Here are the RGB image functions ###
 
@@ -87,3 +96,20 @@ def drawCentrePoint(imageRGB, points):
         (x, y) = point
         imageRGB = drawMultipleOffsetX(imageRGB, x, y)
     return imageRGB
+
+def getImageWithoutEmptyRows(path):
+    image = cv2.imread(path)
+    (height, width, _) = np.shape(image)  # dummy is (180, 1250, 3), i.e. (height, width, colors)
+    print(np.shape(image))
+
+    newBinarizedImage = np.zeros((height, width), dtype=int)
+    print("processing image...")
+    for y in range(height):
+        #print("processing... pixel row: ", y, " out of ", height)
+        for x in range(width):
+            (r, _, _) = image[y, x]
+            if r < 125:
+                newBinarizedImage[y, x] = int(1)
+
+    return newBinarizedImage
+
