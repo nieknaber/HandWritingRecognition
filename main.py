@@ -1,6 +1,7 @@
 
 from src.character_classification_controller import Character_Classification_Controller
 from src.network_controller import Network_Controller
+from src.style_classification_controller import Style_Classifier
 
 from src.data_preparation import helper as h
 
@@ -13,14 +14,15 @@ segment_dim = 30
 window_dim = (6,3)
 num_directions = 8
 
+data_directories = [
+         './src/resources/original/characters/Archaic',
+         './src/resources/original/characters/Hasmonean',
+         './src/resources/original/characters/Herodian'
+    ]
+
 def test_Network_Training():
     
     epochs = 20
-    data_directories = [
-         './src/resources/original/characters/Herodian',
-         './src/resources/original/characters/Archaic',
-         './src/resources/original/characters/Hasmonean'
-    ]
 
     net = Network_Controller(segment_dim, window_dim, data_directories, num_directions, epochs, cached = True)
     net.run_training()
@@ -49,18 +51,20 @@ def test_Character_Classfication():
     json.dump([window.tolist() for window in windows], open('./src/cached_data/classified_characters/test_windows.json', 'w'))
     json.dump(labels, open('./src/cached_data/classified_characters/test_labels.json', 'w'))
 
-test_Character_Classfication()
-    
 def test_style_classification():
 
     ### INPUT
+    windows = np.array(json.load(open('./src/cached_data/classified_characters/test_windows.json', 'r')))
+    labels = json.load(open('./src/cached_data/classified_characters/test_labels.json', 'r'))
 
-
-    newLabels = [label.capitalize() for label in labels]
-    newImgs = [img.astype(np.uint8) for img in imgs]
-    print("doint style classification")
-    styleClassifier = Classifier("char_num_acc_lda_k3.txt", 3)
-    style = styleClassifier.classifyList(newImgs, newLabels)
+    newImgs = [img.astype(np.uint8) for img in windows]
+    capitalized_labels = [l.capitalize() for l in labels]
+    # newLabels = [label.capitalize() for label in labels]
+    # newImgs = [img.astype(np.uint8) for img in imgs]
+    # print("doint style classification")
+    styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k3.txt", data_directories, 3)
+    style = styleClassifier.classifyList(newImgs, capitalized_labels)
     print(style)
     print(labels[1])
 
+test_style_classification()

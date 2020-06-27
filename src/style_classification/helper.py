@@ -3,8 +3,8 @@ import random
 import numpy as np
 import cv2 as cv
 from statistics import stdev
-from src.HelperFunctions.helper import *
-from src.SlantNormalization.slantNormalize import *
+from src.data_preparation.helper import *
+from src.segmentation.slantNormalize import *
 
 def preprocess(imgs):
     allChars = []
@@ -29,6 +29,7 @@ def preprocess(imgs):
     return allChars
 
 def getData(char, archaicFolder, hasmoneanFolder, herodianFolder):
+
     archaicChars = [getImage(f.path) for f in os.scandir(archaicFolder + char) if f.is_file() and f.path[-3:] == "jpg"]
     hasmoneanChars = [getImage(f.path) for f in os.scandir(hasmoneanFolder + char) if f.is_file() and f.path[-3:] == "jpg"]
     herodianChars = [getImage(f.path) for f in os.scandir(herodianFolder + char) if f.is_file() and f.path[-3:] == "jpg"]

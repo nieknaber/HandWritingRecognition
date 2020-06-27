@@ -1,8 +1,8 @@
-from src.StyleClassification.helper import getData, zScoreTwoArrs
-from src.StyleClassification import features
+# from src.style_classification.helper import getData, zScoreTwoArrs
+from src.style_classification import features
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from src.StyleClassification.helper import *
+from src.style_classification.helper import *
 import numpy as np
 
 # Class that can be used to classify a document into a style.
@@ -14,9 +14,10 @@ import numpy as np
 # ...
 #
 # More elaborate example can be found in commented code at bottom of this file
-class Classifier:
+class Style_Classifier:
 
-    def __init__(self, file, k = 1):
+    def __init__(self, file, directories, k = 1):
+        self.directories = [str(d+"/") for d in directories]
         self.charToNum = {}
         self.charToDat = {}
         self.k = k
@@ -24,7 +25,7 @@ class Classifier:
 
     # Function to load all training images for the knn classifier
     def readData(self, char):
-        self.charToDat[char] = getData(char, "characters_training/Archaic/", "characters_training/Hasmonean/", "characters_training/Herodian/")
+        self.charToDat[char] = getData(char, self.directories[0], self.directories[1], self.directories[2])
 
     # Function to parse parameter file
     def parseFile(self, file):
