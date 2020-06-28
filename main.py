@@ -18,9 +18,9 @@ def pipeline():
 
     pipeline.clear_cache_results()
 
-    pipeline.network_training(
-        epochs = 200
-    )
+    # pipeline.network_training(
+    #     epochs = 200
+    # )
 
     pipeline.line_segmentation(
         images = find_files_from_arguments()
