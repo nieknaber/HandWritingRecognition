@@ -148,7 +148,7 @@ class Pipeline_Controller:
             newImgs = [img.astype(np.uint8) for img in windows]
             capitalized_labels = [l.capitalize() for l in labels]
 
-            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k3_maxDim3.txt", self.data_directories, 3)
+            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_pca_9k3_maxDim3.txt", self.data_directories, 3)
             styles = styleClassifier.classifyList(newImgs, capitalized_labels)
 
             original_image = data.split("-")[0]

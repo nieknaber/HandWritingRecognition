@@ -4,6 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from src.style_classification.helper import *
 import numpy as np
+from sklearn.decomposition import PCA
 
 # Class that can be used to classify a document into a style.
 # Example:
@@ -81,7 +82,7 @@ class Style_Classifier:
         train = features.getFeatures(xTrain, num)
 
         if (test.shape[1] == train.shape[1]):
-            lda = LinearDiscriminantAnalysis()
+            lda = PCA(9)
             trainTr = lda.fit_transform(train, yTrain)
             testTr = lda.transform(test)
             

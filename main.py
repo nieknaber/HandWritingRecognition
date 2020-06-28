@@ -6,7 +6,7 @@ def pipeline():
 
     pipeline = Pipeline_Controller(
         segment_dim = 16,
-        window_dim = (6,5),
+        window_dim = (6,3),
         num_directions = 8,
 
         data_directories = [
@@ -18,17 +18,17 @@ def pipeline():
 
     pipeline.clear_cache_results()
 
-    pipeline.network_training(
-        epochs = 100
-    )
+    # pipeline.network_training(
+    #     epochs = 100
+    # )
 
-    pipeline.line_segmentation(
-        images = find_files_from_arguments()
-    )
+    # pipeline.line_segmentation(
+    #     images = find_files_from_arguments()
+    # )
 
-    pipeline.character_classfication()
+    # pipeline.character_classfication()
 
-    pipeline.style_classification()
+    # pipeline.style_classification()
     
     
 def find_files_from_arguments():
