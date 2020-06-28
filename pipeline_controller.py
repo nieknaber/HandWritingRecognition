@@ -36,7 +36,7 @@ class Pipeline_Controller:
             data_directories = self.data_directories, 
             num_directions = self.num_directions, 
             epochs = epochs, 
-            cached = False, 
+            cached = True, 
             cache_path = self.training_data_cache,
             verbose = True
         )
@@ -94,7 +94,7 @@ class Pipeline_Controller:
             num_inputs = self.num_directions * self.window_dim[0] * self.window_dim[1]
             segment_size = (self.segment_dim, self.segment_dim)
             window_size = (self.segment_dim * self.window_dim[0], self.segment_dim * self.window_dim[1])
-            model_path = self.trained_model_directory + 'model_200_144.pt'
+            model_path = self.trained_model_directory + 'model_200_16.pt'
 
             cc = Character_Classification_Controller(segment_size, window_size, model_path, num_inputs)
             result = cc.run_classification(line)
