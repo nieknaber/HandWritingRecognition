@@ -9,6 +9,7 @@ import json, sys, os
 import numpy as np
 from PIL import Image
 import cv2 as cv2
+import math
 
 class Pipeline_Controller:
 
@@ -46,7 +47,7 @@ class Pipeline_Controller:
             data_directories = self.data_directories, 
             num_directions = self.num_directions, 
             epochs = epochs, 
-            cached = True, 
+            cached = False, 
             cache_path = self.training_data_cache,
             verbose = True
         )
@@ -147,7 +148,7 @@ class Pipeline_Controller:
             newImgs = [img.astype(np.uint8) for img in windows]
             capitalized_labels = [l.capitalize() for l in labels]
 
-            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k5_maxDim3.txt", self.data_directories, 5)
+            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k3_maxDim3.txt", self.data_directories, 3)
             styles = styleClassifier.classifyList(newImgs, capitalized_labels)
 
             original_image = data.split("-")[0]
@@ -197,7 +198,7 @@ class Pipeline_Controller:
             while (i + sequence < len(text) and char == text[i + sequence]):
                 sequence += 1
 
-            newText += char * (int(sequence / 3) + 1)
+            newText += char * (math.ceil(sequence / 2))
             i += sequence
 
         return newText
