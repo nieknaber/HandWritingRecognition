@@ -21,6 +21,7 @@ class Pipeline_Controller:
         self.cached_lines = './src/cached_data/lines/'
         self.trained_model_directory = './src/cached_data/trained_models/'
         self.cached_characters = './src/cached_data/classified_characters/'
+        self.training_data_cache = './src/cached_data/converted_images_for_training/data.json'
         self.results_directory = './results/'
 
         self.character_for_name = {
@@ -29,7 +30,17 @@ class Pipeline_Controller:
 
     def network_training(self, epochs):
         
-        net = Network_Controller(self.segment_dim, self.window_dim, self.data_directories, self.num_directions, epochs, cached = True)
+        net = Network_Controller(
+            segment_dim = self.segment_dim, 
+            window_dim = self.window_dim, 
+            data_directories = self.data_directories, 
+            num_directions = self.num_directions, 
+            epochs = epochs, 
+            cached = False, 
+            cache_path = self.training_data_cache,
+            verbose = True
+        )
+
         net.run_training()
         net.run_testing()
 
@@ -43,13 +54,14 @@ class Pipeline_Controller:
             name = image.split("/")[-1].split(".")[0]
             image = h.getImage(image)
 
-            negative_y_penalty = 7.5
-            positive_y_penalty = 0
-            passthrough_black_penalty = 150
-            peak_prominence = 0.2
-            min_line_size = 0.01
-
-            segmenter = LineSegmentationController(negative_y_penalty,positive_y_penalty,passthrough_black_penalty,peak_prominence,min_line_size)
+            segmenter = LineSegmentationController(
+                negative_y_penalty = 7.5, 
+                positive_y_penalty = 0, 
+                passthrough_black_penalty = 150, 
+                peak_prominence = 0.2, 
+                min_line_size = 0.01
+            )
+            
             images = segmenter.segment_lines(image)
 
             part_counter = 1

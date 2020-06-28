@@ -11,7 +11,7 @@ import json
 
 class Network_Controller():
 
-    def __init__(self, segment_dim, window_dim, data_directories, num_directions, epochs, cached, verbose = True):
+    def __init__(self, segment_dim, window_dim, data_directories, num_directions, epochs, cached, cache_path, verbose = True):
         self.segment_dim = segment_dim
         self.window_dim = window_dim
 
@@ -20,7 +20,7 @@ class Network_Controller():
         self.data_directories = data_directories
         self.verbose = verbose
 
-        self.data_path = './src/cached_data/converted_images/data.json'
+        self.data_path = cache_path
         self.num_directions = num_directions
         self.epochs = epochs
         self.cached = cached
