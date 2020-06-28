@@ -31,7 +31,6 @@ class Pipeline_Controller:
     def clear_cache_results(self):
         files = [self.cached_lines + f for f in os.listdir(self.cached_lines) if not f.startswith('.')]
         files.extend([self.cached_characters + f for f in os.listdir(self.cached_characters) if not f.startswith('.')])
-        files.append(self.training_data_cache)
         files.extend([self.results_directory + f for f in os.listdir(self.results_directory) if not f.startswith('.')])
 
         for file in files:
@@ -105,7 +104,7 @@ class Pipeline_Controller:
             num_inputs = self.num_directions * self.window_dim[0] * self.window_dim[1]
             segment_size = (self.segment_dim, self.segment_dim)
             window_size = (self.segment_dim * self.window_dim[0], self.segment_dim * self.window_dim[1])
-            model_path = self.trained_model_directory + 'model_dimension3_250_epochs.pt'
+            model_path = self.trained_model_directory + 'model_100_16.pt'
 
             cc = Character_Classification_Controller(segment_size, window_size, model_path, num_inputs)
             result = cc.run_classification(line)
@@ -118,6 +117,7 @@ class Pipeline_Controller:
             text = ""
             for l in labels:
                 text += self.character_for_name[l]
+                text = self.clean(text)
             self.append_output_to_file(filename, text)
 
             json.dump(([window.tolist() for window in windows],labels), open(self.cached_characters + name + '.json', 'w'))
@@ -170,25 +170,6 @@ class Pipeline_Controller:
                 f.write(style)
             print(style)
 
-        #     vote_dict = {}
-        #     voted = styles_of_images[key]
-        #     unique = list(set(voted))
-        #     for u in unique:
-        #         vote_dict[u] = 0
-        #     for v in voted:
-        #         vote_dict[v] += 1
-
-        #     print(vote_dict)
-
-        #     max = 0
-        #     current_best = ""
-        #     for vote_key in vote_dict.keys():
-        #         if vote_dict[vote_key] > max:    
-        #             max = vote_dict[vote_key]
-        #             current_best = vote_key
-                
-        #     styles_of_images[key] = current_best
-
         print("Style classification done!")
     
     def append_output_to_file(self, filename, content):
@@ -204,6 +185,22 @@ class Pipeline_Controller:
         else:
             with open(path, 'w') as f:
                 f.write(content)
+
+    def clean(self, text):
+        newText = ""
+        i = 0
+
+        while (i < len(text)):
+            char = text[i]
+            sequence = 1
+
+            while (i + sequence < len(text) and char == text[i + sequence]):
+                sequence += 1
+
+            newText += char * (int(sequence / 3) + 1)
+            i += sequence
+
+        return newText
 
 
         

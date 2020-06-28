@@ -5,8 +5,8 @@ from pipeline_controller import Pipeline_Controller
 def pipeline():
 
     pipeline = Pipeline_Controller(
-        segment_dim = 30,
-        window_dim = (6,3),
+        segment_dim = 16,
+        window_dim = (6,5),
         num_directions = 8,
 
         data_directories = [
@@ -18,9 +18,9 @@ def pipeline():
 
     pipeline.clear_cache_results()
 
-    # pipeline.network_training(
-    #     epochs = 200
-    # )
+    pipeline.network_training(
+        epochs = 100
+    )
 
     pipeline.line_segmentation(
         images = find_files_from_arguments()

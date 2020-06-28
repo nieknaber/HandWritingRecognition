@@ -37,8 +37,9 @@ class Style_Classifier:
             self.charToNum[char] = int(words[1])
             self.readData(char)
 
-     # Function to classify all images with ther character lables.
-    # Returns string of the style that most characters classify to.
+    # Function to vote on style of image.
+    # Returns list of votes where every window voted once.
+    # pos 0: Archaic, pos1: Hasmonean, pos2 Herodian
     def classifyList(self, images, labels):
         assert len(images) == len(labels) # each image needs a character label
 
@@ -61,26 +62,6 @@ class Style_Classifier:
             results.append(np.sum(styles == i))
 
         return results # results[0] = archaic. results[1] = hasmonean. result[2] = herodian
-        
-        
-        
-        # a = np.sum(styles == 0)
-        # ha = np.sum(styles == 1)
-        # he = np.sum(styles == 2)
-        # print("archaic votes: ", a)
-        # print("hasmonean votes: ", ha)
-        # print("herodian votes: ", he)
-        # print("undecided votes: ", np.sum(styles == -1))
-
-
-        # if (a >= ha) :
-        #     if (a >= he):
-        #         return "Archaic"
-        # else:
-        #     if (ha >= he):
-        #         return "Hasmonian"
-        
-        # return "Herodian"
 
     # Classify multiple images that are all the same character
     # Returns a list of integers that correspond to style labels
