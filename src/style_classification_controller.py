@@ -37,13 +37,16 @@ class Style_Classifier:
             self.charToNum[char] = int(words[1])
             self.readData(char)
 
-    # Function to classify all images with ther character lables.
+     # Function to classify all images with ther character lables.
     # Returns string of the style that most characters classify to.
     def classifyList(self, images, labels):
         assert len(images) == len(labels) # each image needs a character label
 
         images = np.array(images)
         labels = np.array(labels)
+
+        print(images.shape)
+        print(labels.shape)
 
         u = np.unique(np.array(labels))
         styles = []
@@ -58,6 +61,11 @@ class Style_Classifier:
         a = np.sum(styles == 0)
         ha = np.sum(styles == 1)
         he = np.sum(styles == 2)
+        print("archaic votes: ", a)
+        print("hasmonian votes: ", ha)
+        print("herodean votes: ", he)
+        print("undecided votes: ", np.sum(styles == -1))
+
 
         if (a >= ha) :
             if (a >= he):
@@ -76,27 +84,27 @@ class Style_Classifier:
             return [-1]
         
         num = self.charToNum[label]
-
+        
         test = features.getFeatures(preprocess(images), num)
-        while (test.ndim != 2 and num != 1):
+        while (test.ndim != 2 and num != 0):
             num -= 1
             test = features.getFeatures(images, num)
-
-        if (num == 0):
-            return [-1]
         
         xTrain, yTrain = self.charToDat[label]
         train = features.getFeatures(xTrain, num)
 
-        lda = LinearDiscriminantAnalysis()
-        trainTr = lda.fit_transform(train, yTrain)
-        testTr = lda.transform(test)
-        
-        trainTr, testTr, _ = zScoreTwoArrs(trainTr, testTr)
-        
-        knn = KNeighborsClassifier(self.k)
-        knn.fit(trainTr, yTrain)
-        predictions = knn.predict(testTr)
+        if (test.shape[1] == train.shape[1]):
+            lda = PCA(4)
+            trainTr = lda.fit_transform(train, yTrain)
+            testTr = lda.transform(test)
+            
+            trainTr, testTr, _ = zScoreTwoArrs(trainTr, testTr)
+            
+            knn = KNeighborsClassifier(self.k)
+            knn.fit(trainTr, yTrain)
+            predictions = knn.predict(testTr)
+        else:
+            predictions = [-1] * test.shape[0]
 
         return predictions
 
