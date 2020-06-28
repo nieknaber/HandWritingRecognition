@@ -28,6 +28,17 @@ class Pipeline_Controller:
             "alef":"א", "ayin":"ע", "bet":"ב", "dalet":"ד", "gimel":"ג", "he":"ה", "het":"ח", "kaf":"כ", "kaf-final":"ך", "lamed":"ל", "mem":"מ", "mem-medial":"ם", "nun-final":"ן", "nun-medial":"נ", "pe":"פ", "pe-final":"ף", "qof":"ק", "resh":"ר", "samekh":"ס", "shin":"ש", "taw":"ת", "tet":"ט", "tsadi-final":"ץ", "tsadi-medial":"צ", "waw":"ו", "yod":"י", "zayin":"ז"
         }
 
+    def clear_cache_results(self):
+        files = [self.cached_lines + f for f in os.listdir(self.cached_lines) if not f.startswith('.')]
+        files.extend([self.cached_characters + f for f in os.listdir(self.cached_characters) if not f.startswith('.')])
+        files.append(self.training_data_cache)
+        files.extend([self.results_directory + f for f in os.listdir(self.results_directory) if not f.startswith('.')])
+
+        for file in files:
+            os.remove(file)
+
+        print("Cache Cleared")
+
     def network_training(self, epochs):
         
         net = Network_Controller(
@@ -94,7 +105,7 @@ class Pipeline_Controller:
             num_inputs = self.num_directions * self.window_dim[0] * self.window_dim[1]
             segment_size = (self.segment_dim, self.segment_dim)
             window_size = (self.segment_dim * self.window_dim[0], self.segment_dim * self.window_dim[1])
-            model_path = self.trained_model_directory + 'model_200_16.pt'
+            model_path = self.trained_model_directory + 'model_dimension3_250_epochs.pt'
 
             cc = Character_Classification_Controller(segment_size, window_size, model_path, num_inputs)
             result = cc.run_classification(line)
@@ -123,9 +134,11 @@ class Pipeline_Controller:
         files.sort()
         files = [ f for f in files if not f.startswith('.')]
         
-        # styles_of_images = {}
+        styles_of_images = {}
 
         for data in files:
+
+            print("Style classifying file: ", data)
 
             result = json.load(open(self.cached_characters + data, 'r'))
             (windows, labels) = result
@@ -134,19 +147,29 @@ class Pipeline_Controller:
             newImgs = [img.astype(np.uint8) for img in windows]
             capitalized_labels = [l.capitalize() for l in labels]
 
-            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k3.txt", self.data_directories, 3)
-            style = styleClassifier.classifyList(newImgs, capitalized_labels)
+            styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k5_maxDim3.txt", self.data_directories, 5)
+            styles = styleClassifier.classifyList(newImgs, capitalized_labels)
 
-            # if original_image in styles_of_images:
-            #     previous_styles = styles_of_images[original_image]
-            #     previous_styles.append(style)
-            #     styles_of_images[original_image] = previous_styles
-            # else:
-            #     styles_of_images[original_image] = [style]
+            original_image = data.split("-")[0]
+            if original_image in styles_of_images:
+                previous_styles = styles_of_images[original_image]
+                new_styles = np.add(previous_styles, styles)
+                styles_of_images[original_image] = new_styles
+            else:
+                styles_of_images[original_image] = styles
 
-        # print(styles_of_images)
+        print(styles_of_images)
 
-        # for key in styles_of_images.keys():
+        transformDict = {0: "Archaic", 1: "Hasmonean", 2: "Herodian"}
+        for key in styles_of_images.keys():
+            mx = np.argmax(styles_of_images[key])
+            style = transformDict[mx]
+            
+            path = self.results_directory + key + "_style.txt"
+            with open(path, 'w') as f:
+                f.write(style)
+            print(style)
+
         #     vote_dict = {}
         #     voted = styles_of_images[key]
         #     unique = list(set(voted))

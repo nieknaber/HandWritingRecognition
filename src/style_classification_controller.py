@@ -45,9 +45,6 @@ class Style_Classifier:
         images = np.array(images)
         labels = np.array(labels)
 
-        print(images.shape)
-        print(labels.shape)
-
         u = np.unique(np.array(labels))
         styles = []
         keys = self.charToNum.keys()
@@ -58,23 +55,32 @@ class Style_Classifier:
             styles.extend(self.classifySingle(subset, label))
 
         styles = np.array(styles)
-        a = np.sum(styles == 0)
-        ha = np.sum(styles == 1)
-        he = np.sum(styles == 2)
-        print("archaic votes: ", a)
-        print("hasmonian votes: ", ha)
-        print("herodean votes: ", he)
-        print("undecided votes: ", np.sum(styles == -1))
-
-
-        if (a >= ha) :
-            if (a >= he):
-                return "Archaic"
-        else:
-            if (ha >= he):
-                return "Hasmonian"
         
-        return "Herodian"
+        results = []
+        for i in range(3):
+            results.append(np.sum(styles == i))
+
+        return results # results[0] = archaic. results[1] = hasmonean. result[2] = herodian
+        
+        
+        
+        # a = np.sum(styles == 0)
+        # ha = np.sum(styles == 1)
+        # he = np.sum(styles == 2)
+        # print("archaic votes: ", a)
+        # print("hasmonean votes: ", ha)
+        # print("herodian votes: ", he)
+        # print("undecided votes: ", np.sum(styles == -1))
+
+
+        # if (a >= ha) :
+        #     if (a >= he):
+        #         return "Archaic"
+        # else:
+        #     if (ha >= he):
+        #         return "Hasmonian"
+        
+        # return "Herodian"
 
     # Classify multiple images that are all the same character
     # Returns a list of integers that correspond to style labels
@@ -94,7 +100,7 @@ class Style_Classifier:
         train = features.getFeatures(xTrain, num)
 
         if (test.shape[1] == train.shape[1]):
-            lda = PCA(4)
+            lda = LinearDiscriminantAnalysis()
             trainTr = lda.fit_transform(train, yTrain)
             testTr = lda.transform(test)
             
@@ -107,23 +113,3 @@ class Style_Classifier:
             predictions = [-1] * test.shape[0]
 
         return predictions
-
-# Example to test classifier:
-# classifier = Classifier("char_num_acc_lda_k3.txt", 3)
-
-# characters = [getImage("./characters_training/Archaic/Alef/Alef_00.jpg"), 
-# getImage("./characters_training/Archaic/Alef/Alef_04.jpg"),
-# getImage("./characters_training/Archaic/Het/Het_00.jpg"), 
-# getImage("./characters_training/Archaic/Het/Het_01.jpg"), 
-# getImage("./characters_training/Archaic/Gimel/Gimel_00.jpg"),
-# getImage("characters_training/Archaic/Kaf/Kaf_00.jpg"),
-# getImage("characters_training/Archaic/Kaf/Kaf_02.jpg"),
-# getImage("characters_training/Archaic/Mem/Mem_04.jpg"),
-# getImage("characters_training/Archaic/Mem/Mem_00.jpg"),
-# getImage("characters_training/Archaic/Mem/Mem_02.jpg"),
-# getImage("characters_training/Archaic/Qof/Qof_00.jpg"),
-# getImage("characters_training/Archaic/Qof/Qof_01.jpg"), 
-# getImage("characters_training/Archaic/Pe/Pe_00.jpg")]
-
-# labels = ["Alef"] * 2 + ["Het"] * 2 + ["Gimel"] + ["Kaf"] * 2 + ["Mem"] * 3 + ["Qof"] * 2 + ["Pe"]
-# print(classifier.classifyList(characters, labels))

@@ -5,7 +5,7 @@ from pipeline_controller import Pipeline_Controller
 def pipeline():
 
     pipeline = Pipeline_Controller(
-        segment_dim = 16,
+        segment_dim = 30,
         window_dim = (6,3),
         num_directions = 8,
 
@@ -16,9 +16,11 @@ def pipeline():
         ]
     )
 
-    pipeline.network_training(
-        epochs = 200
-    )
+    pipeline.clear_cache_results()
+
+    # pipeline.network_training(
+    #     epochs = 200
+    # )
 
     pipeline.line_segmentation(
         images = find_files_from_arguments()
@@ -37,7 +39,7 @@ def find_files_from_arguments():
     for f in files:
         if not f.startswith('.'):
             all_files.append(directories + f)
-
+    print(all_files)
     return all_files
 
 if __name__ == "__main__":
