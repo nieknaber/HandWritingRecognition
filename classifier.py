@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from src.StyleClassification.helper import *
 import numpy as np
-
+from sklearn.decomposition import PCA
 # Class that can be used to classify a document into a style.
 # Example:
 # ...
@@ -24,7 +24,7 @@ class Classifier:
 
     # Function to load all training images for the knn classifier
     def readData(self, char):
-        self.charToDat[char] = getData(char, "characters_training/Archaic/", "characters_training/Hasmonean/", "characters_training/Herodian/")
+        self.charToDat[char] = getData(char, "src/characters_training/Archaic/", "src/characters_training/Hasmonean/", "src/characters_training/Herodian/")
 
     # Function to parse parameter file
     def parseFile(self, file):
@@ -44,6 +44,9 @@ class Classifier:
         images = np.array(images)
         labels = np.array(labels)
 
+        print(images.shape)
+        print(labels.shape)
+
         u = np.unique(np.array(labels))
         styles = []
         keys = self.charToNum.keys()
@@ -57,6 +60,11 @@ class Classifier:
         a = np.sum(styles == 0)
         ha = np.sum(styles == 1)
         he = np.sum(styles == 2)
+        print("archaic votes: ", a)
+        print("hasmonian votes: ", ha)
+        print("herodean votes: ", he)
+        print("undecided votes: ", np.sum(styles == -1))
+
 
         if (a >= ha) :
             if (a >= he):
@@ -75,27 +83,27 @@ class Classifier:
             return [-1]
         
         num = self.charToNum[label]
-
+        
         test = features.getFeatures(preprocess(images), num)
-        while (test.ndim != 2 and num != 1):
+        while (test.ndim != 2 and num != 0):
             num -= 1
             test = features.getFeatures(images, num)
-
-        if (num == 0):
-            return [-1]
         
         xTrain, yTrain = self.charToDat[label]
         train = features.getFeatures(xTrain, num)
 
-        lda = LinearDiscriminantAnalysis()
-        trainTr = lda.fit_transform(train, yTrain)
-        testTr = lda.transform(test)
-        
-        trainTr, testTr, _ = zScoreTwoArrs(trainTr, testTr)
-        
-        knn = KNeighborsClassifier(self.k)
-        knn.fit(trainTr, yTrain)
-        predictions = knn.predict(testTr)
+        if (test.shape[1] == train.shape[1]):
+            lda = PCA(4)
+            trainTr = lda.fit_transform(train, yTrain)
+            testTr = lda.transform(test)
+            
+            trainTr, testTr, _ = zScoreTwoArrs(trainTr, testTr)
+            
+            knn = KNeighborsClassifier(self.k)
+            knn.fit(trainTr, yTrain)
+            predictions = knn.predict(testTr)
+        else:
+            predictions = [-1] * test.shape[0]
 
         return predictions
 
@@ -103,7 +111,8 @@ class Classifier:
 # classifier = Classifier("char_num_acc_lda_k3.txt", 3)
 
 # characters = [getImage("./characters_training/Archaic/Alef/Alef_00.jpg"), 
-# getImage("./characters_training/Archaic/Alef/Alef_04.jpg"),
+# getImage("./characters_training/Archaic/Alef/Alef_04.jpg")]
+# print(characters[0].shape)
 # getImage("./characters_training/Archaic/Het/Het_00.jpg"), 
 # getImage("./characters_training/Archaic/Het/Het_01.jpg"), 
 # getImage("./characters_training/Archaic/Gimel/Gimel_00.jpg"),
