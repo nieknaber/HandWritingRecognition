@@ -1,10 +1,5 @@
-# HandWritingRecognition
+# Handwriting Recognition group 4: Just Type
+To run our code, please set up a new virtual environment and install all dependencies using ```pip3 install -r requirements.txt```. 
+You can then run our program by executing ```python3 main.py path/to/test/images/ ``` (note the last ```/```). The results are stored in a folder called ```results```. 
 
-We do all in Python. Python 3.7.
-All array structures are in Numpy.
-
-Line Segmentation: an array of cut-out segment of a line of characters; that means, a 3D array of boolean values (0,1).
-
-File process.py contains execution code.
-In the end of the file a list of slant and slope normalized line segments is present which can be used for character segmentation.
-Some features are already present that can later be used for style identification. 
+For those who feel so inclined, there are some tuneable parameters in ```main.py``` on line 8-10 and ```pipeline_controller.py``` on line 69-73. These have been the subject of meticulous parameter tuning, however, so your mileage may vary. 
