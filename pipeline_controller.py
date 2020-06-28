@@ -123,7 +123,7 @@ class Pipeline_Controller:
 
             json.dump(([window.tolist() for window in windows],labels), open(self.cached_characters + name + '.json', 'w'))
 
-            print("Line " + str(name) + " has been analyized.")
+            print("Line " + str(name) + " has been analyised.")
 
         print(results)
         print("Character classification done, results are saved.")
