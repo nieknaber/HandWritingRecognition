@@ -82,7 +82,7 @@ class Style_Classifier:
         train = features.getFeatures(xTrain, num)
 
         if (test.shape[1] == train.shape[1]):
-            lda = PCA(9)
+            lda = LinearDiscriminantAnalysis()
             trainTr = lda.fit_transform(train, yTrain)
             testTr = lda.transform(test)
             
