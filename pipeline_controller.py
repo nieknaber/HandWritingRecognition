@@ -54,7 +54,11 @@ class Pipeline_Controller:
 
             part_counter = 1
             for image in images:
-                filename = self.cached_lines + name + "-" + str(part_counter)+'.json'
+                if part_counter < 10:
+                    counter_text = "0" + str(part_counter)
+                else:
+                    counter_text = str(part_counter)
+                filename = self.cached_lines + name + "-" + counter_text +'.json'
                 json.dump(image.astype(int).tolist(), open(filename, 'w'))
                 part_counter += 1
 
@@ -67,6 +71,7 @@ class Pipeline_Controller:
         for lines in files:
             if not lines.startswith('.'):
                 all_lines.append(lines)
+        all_lines.sort()
 
         results = []
         for line in all_lines:
@@ -85,6 +90,13 @@ class Pipeline_Controller:
             (windows, labels) = result
             results.append(labels)
 
+            original_image = name.split("-")[0]
+            filename = original_image + "_characters.txt"
+            text = ""
+            for l in labels:
+                text += self.character_for_name[l]
+            self.append_output_to_file(filename, text)
+
             json.dump(([window.tolist() for window in windows],labels), open(self.cached_characters + name + '.json', 'w'))
 
             print("Line " + str(name) + " has been analyized.")
@@ -99,20 +111,13 @@ class Pipeline_Controller:
         files.sort()
         files = [ f for f in files if not f.startswith('.')]
         
-        styles_of_images = {}
+        # styles_of_images = {}
 
         for data in files:
 
             result = json.load(open(self.cached_characters + data, 'r'))
             (windows, labels) = result
             
-            original_image = data.split("-")[0]
-            filename = original_image + "_characters.txt"
-            text = ""
-            for l in labels:
-                text += self.character_for_name[l]
-            self.append_output_to_file(filename, text)
-
             windows = np.array(windows)
             newImgs = [img.astype(np.uint8) for img in windows]
             capitalized_labels = [l.capitalize() for l in labels]
@@ -120,18 +125,35 @@ class Pipeline_Controller:
             styleClassifier = Style_Classifier("./src/cached_data/knn/char_num_acc_lda_k3.txt", self.data_directories, 3)
             style = styleClassifier.classifyList(newImgs, capitalized_labels)
 
-            print(style)
+            # if original_image in styles_of_images:
+            #     previous_styles = styles_of_images[original_image]
+            #     previous_styles.append(style)
+            #     styles_of_images[original_image] = previous_styles
+            # else:
+            #     styles_of_images[original_image] = [style]
 
-            if original_image in styles_of_images:
-                previous_styles = styles_of_images[original_image]
-                previous_styles.append(style)
-                styles_of_images[original_image] = previous_styles
-            else:
-                styles_of_images[original_image] = [style]
+        # print(styles_of_images)
 
-            print(styles_of_images)
+        # for key in styles_of_images.keys():
+        #     vote_dict = {}
+        #     voted = styles_of_images[key]
+        #     unique = list(set(voted))
+        #     for u in unique:
+        #         vote_dict[u] = 0
+        #     for v in voted:
+        #         vote_dict[v] += 1
 
-        print(styles_of_images)
+        #     print(vote_dict)
+
+        #     max = 0
+        #     current_best = ""
+        #     for vote_key in vote_dict.keys():
+        #         if vote_dict[vote_key] > max:    
+        #             max = vote_dict[vote_key]
+        #             current_best = vote_key
+                
+        #     styles_of_images[key] = current_best
+
         print("Style classification done!")
     
     def append_output_to_file(self, filename, content):

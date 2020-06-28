@@ -16,15 +16,15 @@ def pipeline():
         ]
     )
 
-    # pipeline.network_training(
-    #     epochs = 20
-    # )
+    pipeline.network_training(
+        epochs = 20
+    )
 
-    # pipeline.line_segmentation(
-    #     images = find_files_from_arguments()
-    # )
+    pipeline.line_segmentation(
+        images = find_files_from_arguments()
+    )
 
-    # pipeline.character_classfication()
+    pipeline.character_classfication()
 
     pipeline.style_classification()
     
