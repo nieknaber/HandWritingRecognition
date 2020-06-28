@@ -20,13 +20,13 @@ def pipeline():
         epochs = 200
     )
 
-    # pipeline.line_segmentation(
-    #     images = find_files_from_arguments()
-    # )
+    pipeline.line_segmentation(
+        images = find_files_from_arguments()
+    )
 
-    # pipeline.character_classfication()
+    pipeline.character_classfication()
 
-    # pipeline.style_classification()
+    pipeline.style_classification()
     
     
 def find_files_from_arguments():
