@@ -6,7 +6,7 @@ numpy==1.18.4
 opencv_python==4.2.0.34
 classifier==2.0
 keras==2.4.3
-Pillow==7.1.2
+Pillow==9.0.1
 scikit_learn==0.23.1
 scikit-image==0.17.2
 source==1.2.0
