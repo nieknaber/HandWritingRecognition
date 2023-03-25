@@ -10,4 +10,4 @@ Pillow==7.1.2
 scikit_learn==0.23.1
 scikit-image==0.17.2
 source==1.2.0
-tensorflow==2.2.0
+tensorflow==2.11.1
